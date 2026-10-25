@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Check, MoreVertical, ChevronRight, Trash2, Flag, Calculator, Repeat, SkipForward, SlidersHorizontal, BookOpen } from 'lucide-react'
 import { useT } from '@/i18n'
@@ -30,7 +30,7 @@ type Sheet = 'form' | 'warmup' | 'swap' | 'skip' | 'menu' | 'details' | null
 
 export default function LiveWorkout() {
   const nav = useNavigate()
-  const { t, l } = useT()
+  const { t, l, n } = useT()
   const settings = useSettings()
   const toast = useUi((s) => s.toast)
   const workout = useActive((s) => s.workout)!
@@ -46,6 +46,7 @@ export default function LiveWorkout() {
   const [warm, setWarm] = useState(false)
   const [cueOpen, setCueOpen] = useState(false)
   const [finishing, setFinishing] = useState(false)
+  const chipsRef = useRef<HTMLDivElement>(null)
 
   const slot: ActiveSlot = workout.slots.find((s) => s.slotId === workout.currentSlotId) ?? workout.slots[0]
   const ex = EXERCISES[slot.exerciseId]
@@ -66,6 +67,8 @@ export default function LiveWorkout() {
     setRir(slot.prescription.targetRir); setForm('good'); setPain(0); setWarm(false); setCueOpen(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slot.slotId, slot.exerciseId, setIndex])
+
+  useEffect(() => { chipsRef.current?.querySelector('[aria-pressed="true"]')?.scrollIntoView({ inline: 'center', block: 'nearest' }) }, [slot.slotId])
 
   useEffect(() => {
     const snap = () => { const w = useActive.getState().workout; if (w) sessionsRepo.snapshotActive(w).catch(() => {}) }
@@ -122,11 +125,11 @@ export default function LiveWorkout() {
         <button aria-label={t('workout.actions')} className="tap rounded-full text-muted" onClick={() => setSheet('menu')}><MoreVertical /></button>
       </header>
 
-      <div className="flex gap-1.5 overflow-x-auto no-scrollbar -mx-4 px-4 pb-2 mb-1">
+      <div ref={chipsRef} className="flex gap-1.5 overflow-x-auto no-scrollbar -mx-4 px-4 pb-2 mb-1">
         {workout.slots.map((s, i) => {
           const n = setsForSlot(workout, s.slotId).filter((x) => !x.isWarmup).length
           const done = n >= s.prescription.sets, skipped = workout.skips.some((k) => k.slotId === s.slotId), cur = s.slotId === slot.slotId
-          return <Chip key={s.slotId} active={cur} onClick={() => setCurrent(s.slotId)} className={`!min-h-9 !px-3 !text-xs ${done ? 'opacity-60' : skipped ? 'opacity-40 line-through' : ''}`}>{i + 1}{done ? ' ✓' : skipped ? '' : ` · ${EXERCISES[s.exerciseId]?.termEn}`}</Chip>
+          return <Chip key={s.slotId} active={cur} onClick={() => setCurrent(s.slotId)} className={`!px-3 !text-xs ${done ? 'opacity-60' : skipped ? 'opacity-40 line-through' : ''}`}>{i + 1}{done ? ' ✓' : ` · ${EXERCISES[s.exerciseId]?.termEn}`}</Chip>
         })}
       </div>
 
@@ -134,8 +137,8 @@ export default function LiveWorkout() {
         <button className="flex gap-3 w-full text-start" onClick={() => setSheet('form')}>
           <ExerciseThumb id={ex.id} className="w-20 h-20 rounded-xl shrink-0" />
           <div className="flex-1 min-w-0">
-            <div className="text-lg font-bold leading-tight"><bdi>{l(ex.name).replace(/\s*\(.*\)\s*$/, '')}</bdi></div>
-            {l(ex.name) !== ex.termEn && <div className="text-xs text-muted"><bdi dir="ltr">{ex.termEn}</bdi></div>}
+            <div className="text-lg font-bold leading-tight">{n(ex.name)}</div>
+            {n(ex.name) !== ex.termEn && <div className="text-xs text-muted"><bdi dir="ltr">{ex.termEn}</bdi></div>}
             <div className="text-sm text-muted mt-0.5"><Mixed>{`${t('workout.setOf', { x: Math.min(setIndex + 1, total), y: total })} · ${slot.prescription.repRange[0]}–${slot.prescription.repRange[1]} ${isTimed ? t('common.sec') : 'reps'}`}</Mixed></div>
             <div className="text-sm mt-0.5">
               <span className="text-muted">{t('workout.lastTime')}: </span>
@@ -145,12 +148,12 @@ export default function LiveWorkout() {
           </div>
         </button>
         {ex.guide.kyphosisCue && (
-          <button onClick={() => setCueOpen(!cueOpen)} className={`mt-2 w-full text-start text-xs rounded-xl bg-info/10 text-info px-2.5 py-1.5 ${cueOpen ? '' : 'line-clamp-1'}`}>{l(ex.guide.kyphosisCue)}</button>
+          <button onClick={() => setCueOpen(!cueOpen)} aria-expanded={cueOpen} className="mt-2 w-full min-h-11 text-start text-xs rounded-xl bg-info/10 text-info px-2.5 py-2"><span className={cueOpen ? '' : 'line-clamp-1'}>{l(ex.guide.kyphosisCue)}</span></button>
         )}
         {logged.length > 0 && (
           <ul className="mt-2 flex flex-wrap gap-1.5">
             {logged.map((s) => (
-              <li key={s.id}><button onClick={() => setEditing(s)} className={`min-h-9 px-2.5 rounded-lg text-sm tabular-nums ${s.isWarmup ? 'bg-surface-2 text-muted' : 'bg-accent/15 text-accent'}`}><bdi dir="ltr">{s.isWarmup ? 'W ' : ''}{isBw ? '' : fmtKg(s.weight) + '×'}{s.reps}{isTimed ? 's' : ''}</bdi></button></li>
+              <li key={s.id}><button onClick={() => setEditing(s)} className={`min-h-11 min-w-11 px-2.5 rounded-lg text-sm tabular-nums ${s.isWarmup ? 'bg-surface-2 text-muted' : 'bg-accent/15 text-accent'}`}><bdi dir="ltr">{s.isWarmup ? 'W ' : ''}{isBw ? '' : fmtKg(s.weight) + '×'}{s.reps}{isTimed ? 's' : ''}</bdi></button></li>
             ))}
           </ul>
         )}
@@ -187,7 +190,7 @@ export default function LiveWorkout() {
       <SkipSheet slot={sheet === 'skip' ? slot : null} onClose={() => setSheet(null)} onSkipped={goNext} />
       <BottomSheet open={sheet === 'details'} onClose={() => setSheet(null)} title={t('workout.details')}>
         <div className="text-xs text-muted mb-1">RIR</div>
-        <div className="flex gap-1 mb-3">{[0, 1, 2, 3, 4, 5].map((n) => <button key={n} onClick={() => setRir(n)} className={`flex-1 min-h-11 rounded-lg text-sm font-semibold ${rir === n ? 'bg-accent text-black' : 'bg-surface-2 text-muted'}`}>{n}</button>)}</div>
+        <RirPicker value={rir} onChange={setRir} />
         <div className="text-xs text-muted mb-1">{t('workout.form')}</div>
         <Segmented className="mb-3" value={form} onChange={setForm} options={[{ value: 'good', label: t('workout.formGood') }, { value: 'ok', label: t('workout.formOk'), tone: 'warn' }, { value: 'poor', label: t('workout.formPoor'), tone: 'bad' }]} />
         <div className="text-xs text-muted mb-1">{t('workout.pain')}</div>
@@ -195,7 +198,7 @@ export default function LiveWorkout() {
         {!isBw && !isTimed && <Chip active={warm} onClick={() => setWarm(!warm)} className="mb-4">{t('workout.warmupSet')}</Chip>}
         <Button className="w-full" onClick={() => setSheet(null)}>{t('common.done')}</Button>
       </BottomSheet>
-      <BottomSheet open={sheet === 'menu'} onClose={() => setSheet(null)} title={l(ex.name)}>
+      <BottomSheet open={sheet === 'menu'} onClose={() => setSheet(null)} title={n(ex.name)}>
         <div className="flex flex-col gap-2">
           <Button variant="secondary" onClick={() => setSheet('warmup')}><Calculator size={18} />{t('workout.warmupCalc')}</Button>
           <Button variant="secondary" onClick={() => setSheet('swap')}><Repeat size={18} />{t('workout.swap')}</Button>
@@ -208,6 +211,14 @@ export default function LiveWorkout() {
   )
 }
 
+function RirPicker({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <div className="flex gap-1 mb-3" dir="ltr" role="radiogroup" aria-label="RIR">
+      {[0, 1, 2, 3, 4, 5].map((v) => <button key={v} type="button" role="radio" aria-checked={value === v} onClick={() => onChange(v)} className={`flex-1 min-h-11 rounded-lg text-sm font-semibold ${value === v ? 'bg-accent text-black' : 'bg-surface-2 text-muted'}`}>{v}</button>)}
+    </div>
+  )
+}
+
 export function EditSetSheet({ set, onClose, onSave, onDelete, isBw, isTimed, step }: { set: LoggedSet | null; onClose: () => void; onSave: (p: Partial<LoggedSet>) => void; onDelete: () => void; isBw: boolean; isTimed: boolean; step: number }) {
   const { t } = useT()
   const [w, setW] = useState(0); const [r, setR] = useState(0); const [rir, setRir] = useState(0)
@@ -215,10 +226,11 @@ export function EditSetSheet({ set, onClose, onSave, onDelete, isBw, isTimed, st
   return (
     <BottomSheet open={!!set} onClose={onClose} title={t('workout.editSet')}>
       <div className="flex gap-2 mb-3">
-        {!isBw && <Stepper label={t('workout.weight')} value={w} onChange={setW} step={step} />}
-        <Stepper label={isTimed ? t('workout.seconds') : t('workout.reps')} value={r} onChange={setR} step={isTimed ? 5 : 1} />
-        <Stepper label="RIR" value={rir} onChange={setRir} step={1} max={10} />
+        {!isBw && <Stepper label={t('workout.weight')} unit={t('common.kg')} value={w} onChange={setW} step={step} />}
+        <Stepper label={isTimed ? t('workout.seconds') : t('workout.reps')} value={r} onChange={setR} step={isTimed ? 5 : 1} max={isTimed ? 600 : 100} />
       </div>
+      <div className="text-xs text-muted mb-1">RIR</div>
+      <RirPicker value={rir} onChange={setRir} />
       <div className="flex gap-2">
         <Button variant="danger" onClick={onDelete}><Trash2 size={18} />{t('workout.deleteSet')}</Button>
         <Button className="flex-1" onClick={() => onSave({ weight: w, reps: r, rir })}>{t('common.save')}</Button>

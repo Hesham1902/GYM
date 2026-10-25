@@ -30,15 +30,15 @@ export function RestTimerBar() {
   if (!timer) return null
   const rem = remainingMs(timer, now), over = isOver(timer, now)
   return (
-    <div className={`rounded-2xl border p-3 mb-2 ${over ? 'bg-accent/15 border-accent' : 'bg-surface border-border'}`} role="timer" aria-live="polite">
+    <div className={`rounded-2xl border p-3 mb-2 ${over ? 'bg-accent/15 border-accent' : 'bg-surface border-border'}`} role="timer" aria-live="polite" dir="ltr">
       <div className="flex items-center gap-2">
         <button className="tap h-11 px-3 rounded-xl bg-surface-2 text-sm font-semibold" onClick={() => adjust(-15)}>{t('workout.minus15')}</button>
-        <div className="flex-1 text-center">
+        <div className="flex-1 text-center" dir="auto">
           <div className={`text-3xl font-bold tabular-nums ${over ? 'text-accent' : ''}`}>{over ? t('workout.restOver') : fmtClock(rem)}</div>
           {over && <div className="text-xs text-muted">{t('workout.restOverAgo', { sec: Math.round((now - timer.endsAt) / 1000) })}</div>}
         </div>
         <button className="tap h-11 px-3 rounded-xl bg-surface-2 text-sm font-semibold" onClick={() => adjust(15)}>{t('workout.plus15')}</button>
-        <button aria-label={t('workout.skipRest')} className="tap h-11 w-11 rounded-xl bg-surface-2" onClick={skip}><SkipForward size={20} className="mx-auto rtl:flip" /></button>
+        <button aria-label={t('workout.skipRest')} className="tap h-11 w-11 rounded-xl bg-surface-2" onClick={skip}><SkipForward size={20} className="mx-auto" /></button>
       </div>
       <div className="h-1.5 rounded-full bg-surface-2 mt-2 overflow-hidden"><div className="h-full bg-accent transition-[width] duration-200" style={{ width: `${progress(timer, now) * 100}%` }} /></div>
     </div>

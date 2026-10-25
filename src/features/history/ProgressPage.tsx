@@ -5,6 +5,7 @@ import { BarChart3, Scale, Camera, ChevronRight } from 'lucide-react'
 import { useT } from '@/i18n'
 import { Calendar, DAY_COLORS } from '@/components/Calendar'
 import { Card, Chip, Empty, PageHeader } from '@/components/ui'
+import { Mixed } from '@/components/Mixed'
 import { db } from '@/db/db'
 import { PROGRAM } from '@/data/program'
 import type { DayKind } from '@/types'
@@ -51,7 +52,7 @@ export default function ProgressPage() {
               <span className="w-2.5 h-10 rounded-full shrink-0" style={{ background: DAY_COLORS[s.dayKind] }} />
               <div className="flex-1 min-w-0">
                 <div className="font-semibold">{l(PROGRAM[s.dayKind].name)} {s.status === 'unfinished' && <span className="text-xs text-warn">· {t('history.unfinished')}</span>}</div>
-                <div className="text-xs text-muted">{fmtDate(s.dateKey, lang)} · {s.setCount} {t('common.sets')} · {s.volumeKg} {t('common.kg')}{s.endedAt ? ` · ${fmtDuration(s.endedAt - s.startedAt)}` : ''}{s.prs.length ? ` · ${s.prs.length} PR` : ''}</div>
+                <div className="text-xs text-muted"><Mixed>{`${fmtDate(s.dateKey, lang)} · ${s.setCount} ${t(s.setCount === 1 ? 'common.set' : 'common.sets')} · ${s.volumeKg} ${t('common.kg')}${s.endedAt ? ` · ${fmtDuration(s.endedAt - s.startedAt)}` : ''}${s.prs.length ? ` · ${s.prs.length} PR` : ''}`}</Mixed></div>
               </div>
               <ChevronRight className="text-muted rtl:flip" />
             </Card>

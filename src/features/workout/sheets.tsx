@@ -16,10 +16,10 @@ import type { ActiveSlot, SwapReason } from '@/types'
 import { fmtKg } from '@/utils/num'
 
 export function FormSheet({ slot, onClose }: { slot: ActiveSlot | null; onClose: () => void }) {
-  const { l } = useT()
+  const { n } = useT()
   const ex = slot ? EXERCISES[slot.exerciseId] : null
   return (
-    <BottomSheet open={!!slot} onClose={onClose} title={ex ? l(ex.name) : ''} tall>
+    <BottomSheet open={!!slot} onClose={onClose} title={ex ? n(ex.name) : ''} tall>
       {ex && <><div className="mb-3"><ExerciseMedia id={ex.id} compact /></div><GuideBody exerciseId={ex.id} /></>}
     </BottomSheet>
   )
@@ -41,7 +41,7 @@ export function WarmupSheet({ slot, weight, onClose }: { slot: ActiveSlot | null
 }
 
 export function SwapSheet({ slot, onClose }: { slot: ActiveSlot | null; onClose: () => void }) {
-  const { t, l } = useT()
+  const { t, l, n } = useT()
   const settings = useSettings()
   const workout = useActive((s) => s.workout)
   const swap = useActive((s) => s.swap)
@@ -60,7 +60,7 @@ export function SwapSheet({ slot, onClose }: { slot: ActiveSlot | null; onClose:
       const built = await buildSlot(slot.slotId, toId, alt.repRange, false, workout.week)
       swap({ slotId: slot.slotId, from: slot.exerciseId, to: toId, reason, permanent, at: Date.now() }, alt.repRange, built.prescription)
       if (permanent) settings.setPermanentSwap(slot.slotId, toId === originalId ? null : toId)
-      toast(t('workout.swapped', { name: l(alt.name) }), 'success'); onClose()
+      toast(t('workout.swapped', { name: n(alt.name) }), 'success'); onClose()
     } finally { setBusy(false) }
   }
   const reasons: { v: SwapReason; k: 'workout.swapBusy' | 'workout.swapMissing' | 'workout.swapDiscomfort' | 'workout.swapOther' }[] = [{ v: 'busy', k: 'workout.swapBusy' }, { v: 'missing', k: 'workout.swapMissing' }, { v: 'discomfort', k: 'workout.swapDiscomfort' }, { v: 'other', k: 'workout.swapOther' }]
@@ -73,8 +73,8 @@ export function SwapSheet({ slot, onClose }: { slot: ActiveSlot | null; onClose:
         {options.map((a) => { const alt = EXERCISES[a.exerciseId]; if (!alt) return null; return (
           <button key={a.exerciseId} disabled={busy} onClick={() => choose(a.exerciseId)} className="card p-3 text-start active:bg-surface-2">
             <div className="flex items-center gap-3"><ExerciseThumb id={alt.id} className="w-14 h-14 rounded-xl shrink-0" />
-              <div className="flex-1"><div className="font-semibold leading-tight">{l(alt.name)}</div><div className="text-xs text-muted"><Mixed>{`${t(`equipment.${alt.equipment}`)} · ${alt.repRange[0]}–${alt.repRange[1]} reps`}</Mixed></div></div></div>
-            <div className="mt-2 text-sm"><span className="text-muted">{t('library.chooseWhen')}: </span>{l(a.chooseWhen)}</div>
+              <div className="flex-1 min-w-0"><div className="font-semibold leading-tight">{n(alt.name)}</div><div className="text-xs text-muted"><Mixed>{`${n(alt.name) !== alt.termEn ? `${alt.termEn} · ` : ''}${t(`equipment.${alt.equipment}`)} · ${alt.repRange[0]}–${alt.repRange[1]} reps`}</Mixed></div></div></div>
+            <div className="mt-2 text-sm"><span className="text-muted">{t('library.chooseWhen')}: </span><Mixed>{l(a.chooseWhen)}</Mixed></div>
           </button>
         ) })}
       </div>
@@ -83,13 +83,13 @@ export function SwapSheet({ slot, onClose }: { slot: ActiveSlot | null; onClose:
 }
 
 export function SkipSheet({ slot, onClose, onSkipped }: { slot: ActiveSlot | null; onClose: () => void; onSkipped: () => void }) {
-  const { t, l } = useT()
+  const { t, n } = useT()
   const skip = useActive((s) => s.skip)
   const [reason, setReason] = useState('')
   const ex = slot ? EXERCISES[slot.exerciseId] : null
   return (
     <BottomSheet open={!!slot} onClose={onClose} title={t('workout.skipExercise')}>
-      <p className="mb-3">{t('workout.skipConfirm')} <b>{ex ? l(ex.name) : ''}</b></p>
+      <p className="mb-3 font-semibold">{ex ? n(ex.name) : ''}</p>
       <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder={t('workout.skipReason')} className="w-full h-12 rounded-2xl bg-surface-2 border border-border px-3 mb-4 outline-none" />
       <div className="flex gap-2">
         <Button variant="secondary" className="flex-1" onClick={onClose}>{t('common.cancel')}</Button>

@@ -7,6 +7,7 @@ import { useSettings } from '@/stores/settingsStore'
 import { useActive } from '@/stores/activeWorkoutStore'
 import { useUi } from '@/stores/uiStore'
 import { Button, Card, IconButton, PageHeader, Toggle } from '@/components/ui'
+import { Mixed } from '@/components/Mixed'
 import { sessionsRepo } from '@/db/repo/sessions'
 import { EXERCISES } from '@/data/exercises'
 import { PROGRAM } from '@/data/program'
@@ -20,7 +21,7 @@ import { fmtKg } from '@/utils/num'
 export default function SessionPage() {
   const { id = '' } = useParams()
   const nav = useNavigate()
-  const { t, l, lang } = useT()
+  const { t, l, n, lang } = useT()
   const settings = useSettings()
   const startActive = useActive((s) => s.start)
   const active = useActive((s) => s.workout)
@@ -41,27 +42,27 @@ export default function SessionPage() {
   const ex = editing ? EXERCISES[editing.exerciseId] : null
   return (
     <main className="page">
-      <PageHeader title={l(PROGRAM[s.dayKind].name)} back sub={`${fmtDate(s.dateKey, lang)} · ${t('common.week')} ${s.week}${s.endedAt ? ` · ${fmtDuration(s.endedAt - s.startedAt)}` : ''}`}
+      <PageHeader title={l(PROGRAM[s.dayKind].name)} back sub={<Mixed>{`${fmtDate(s.dateKey, lang)} · ${t('common.week')} ${s.week}${s.endedAt ? ` · ${fmtDuration(s.endedAt - s.startedAt)}` : ''}`}</Mixed>}
         right={<IconButton label={t('history.deleteSession')} onClick={del}><Trash2 className="text-danger" /></IconButton>} />
       {s.status === 'unfinished' && <Button className="w-full mb-3" onClick={resume}><RotateCcw size={18} />{t('history.resume')}</Button>}
       <div className="grid grid-cols-2 gap-2 mb-3">
-        <Card className="text-center p-3"><div className="text-xs text-muted">{t('history.volume')}</div><div className="text-xl font-bold">{s.volumeKg} {t('common.kg')}</div></Card>
+        <Card className="text-center p-3"><div className="text-xs text-muted">{t('history.volume')}</div><div className="text-xl font-bold"><bdi>{s.volumeKg} {t('common.kg')}</bdi></div></Card>
         <Card className="text-center p-3"><div className="text-xs text-muted">{t('history.sets')}</div><div className="text-xl font-bold">{s.setCount}</div></Card>
       </div>
       {[...bySlot.entries()].map(([slotId, sets]) => {
         const e = EXERCISES[sets[0].exerciseId]
         return (
           <Card key={slotId} className="mb-2 p-3">
-            <div className="font-semibold mb-1">{l(e?.name)}</div>
+            <div className="font-semibold mb-1">{n(e?.name)}</div>
             <div className="flex flex-wrap gap-1.5">
-              {sets.sort((a, b) => a.loggedAt - b.loggedAt).map((x) => <button key={x.id} onClick={() => setEditing(x)} className={`min-h-9 px-2.5 rounded-lg text-sm tabular-nums ${x.isWarmup ? 'bg-surface-2 text-muted' : 'bg-accent/15 text-accent'}`}>{x.isWarmup ? 'W ' : ''}{e?.loadType === 'bodyweight' ? '' : fmtKg(x.weight) + '×'}{x.reps} <span className="opacity-60">@{x.rir}</span></button>)}
+              {sets.sort((a, b) => a.loggedAt - b.loggedAt).map((x) => <button key={x.id} onClick={() => setEditing(x)} className={`min-h-11 min-w-11 px-2.5 rounded-lg text-sm tabular-nums ${x.isWarmup ? 'bg-surface-2 text-muted' : 'bg-accent/15 text-accent'}`}><bdi dir="ltr">{x.isWarmup ? 'W ' : ''}{e?.loadType === 'bodyweight' ? '' : fmtKg(x.weight) + '×'}{x.reps}{e?.loadType === 'time' ? 's' : ''} <span className="opacity-60">RIR {x.rir}</span></bdi></button>)}
             </div>
             {s.prs.filter((p) => p.exerciseId === sets[0].exerciseId).length > 0 && <div className="text-xs text-warn mt-1">PR</div>}
           </Card>
         )
       })}
-      {s.swaps.length > 0 && <Card className="mb-2 p-3 text-sm"><div className="font-semibold mb-1">{t('history.swaps')}</div>{s.swaps.map((w, i) => <div key={i} className="text-muted">{t('history.swappedFromTo', { from: l(EXERCISES[w.from]?.name), to: l(EXERCISES[w.to]?.name), reason: t(`workout.swap${w.reason[0].toUpperCase() + w.reason.slice(1)}` as 'workout.swapBusy') })}</div>)}</Card>}
-      {s.skips.length > 0 && <Card className="mb-2 p-3 text-sm"><div className="font-semibold mb-1">{t('history.skips')}</div>{s.skips.map((k, i) => <div key={i} className="text-muted">{l(EXERCISES[k.exerciseId]?.name)}{k.reason ? ` — ${k.reason}` : ''}</div>)}</Card>}
+      {s.swaps.length > 0 && <Card className="mb-2 p-3 text-sm"><div className="font-semibold mb-1">{t('history.swaps')}</div>{s.swaps.map((w, i) => <div key={i} className="text-muted">{t('history.swappedFromTo', { from: n(EXERCISES[w.from]?.name), to: n(EXERCISES[w.to]?.name), reason: t(`workout.swap${w.reason[0].toUpperCase() + w.reason.slice(1)}` as 'workout.swapBusy') })}</div>)}</Card>}
+      {s.skips.length > 0 && <Card className="mb-2 p-3 text-sm"><div className="font-semibold mb-1">{t('history.skips')}</div>{s.skips.map((k, i) => <div key={i} className="text-muted">{n(EXERCISES[k.exerciseId]?.name)}{k.reason ? ` — ${k.reason}` : ''}</div>)}</Card>}
       <Card className="mb-2 p-3 flex items-center justify-between"><span>{t('workout.postureCheck')}</span><Toggle checked={s.postureDone} onChange={(v) => save({ ...s, postureDone: v })} label={t('workout.postureCheck')} /></Card>
       <Card className="mb-2 p-3"><textarea value={s.notes} onChange={(e) => setS({ ...s, notes: e.target.value })} onBlur={() => save(s)} placeholder={t('history.addNotes')} rows={2} className="w-full bg-transparent outline-none resize-none" /></Card>
       <EditSetSheet set={editing} onClose={() => setEditing(null)} isBw={ex?.loadType === 'bodyweight'} isTimed={ex?.loadType === 'time'} step={ex?.weightStep ?? 2.5}

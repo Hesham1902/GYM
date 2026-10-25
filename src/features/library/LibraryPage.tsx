@@ -1,25 +1,30 @@
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Search, Star, SlidersHorizontal, Settings as SettingsIcon } from 'lucide-react'
+import { Search, Star, SlidersHorizontal } from 'lucide-react'
 import { EXERCISE_LIST } from '@/data/exercises'
 import { useT } from '@/i18n'
 import { useSettings } from '@/stores/settingsStore'
 import type { Difficulty, Equipment, Exercise, MuscleGroup, Pattern } from '@/types'
-import { Chip, Empty, IconButton, PageHeader } from '@/components/ui'
+import { Button, Chip, Empty, PageHeader } from '@/components/ui'
 import { ExerciseThumb } from '@/components/ExerciseMedia'
+import { Mixed } from '@/components/Mixed'
 import { BottomSheet } from '@/components/BottomSheet'
 
 const MUSCLES: MuscleGroup[] = ['chest', 'upperBack', 'lats', 'shoulders', 'rearDelts', 'biceps', 'triceps', 'quads', 'hamstrings', 'glutes', 'calves', 'core', 'neck']
 const EQUIP: Equipment[] = ['machine', 'cable', 'dumbbell', 'barbell', 'smith', 'band', 'bodyweight', 'foamRoller']
 const PATTERNS: Pattern[] = ['horizontalPush', 'verticalPush', 'horizontalPull', 'verticalPull', 'squat', 'hinge', 'isolation', 'core', 'mobility']
 
+/** Folds Arabic letter variants so "اسكوات" finds "سكوات"-style spellings and hamza forms match. */
+const fold = (s: string) => s.toLowerCase().replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').replace(/[\u064B-\u0652\u0640]/g, '')
+
 export function ExerciseRow({ ex, onClick, fav }: { ex: Exercise; onClick: () => void; fav?: boolean }) {
-  const { l, t } = useT()
+  const { n, t } = useT()
   return (
     <button onClick={onClick} className="w-full card p-3 flex items-center gap-3 text-start active:bg-surface-2">
       <ExerciseThumb id={ex.id} className="w-[72px] h-[72px] rounded-xl shrink-0" />
       <div className="flex-1 min-w-0">
-        <div className="font-semibold leading-tight line-clamp-2">{l(ex.name)}</div>
+        <div className="font-semibold leading-tight line-clamp-2"><Mixed>{n(ex.name)}</Mixed></div>
+        {n(ex.name) !== ex.termEn && <div className="text-xs text-muted truncate mt-0.5"><bdi dir="ltr">{ex.termEn}</bdi></div>}
         <div className="text-xs text-muted truncate mt-0.5">{t(`muscles.${ex.muscles[0]}`)} · {t(`equipment.${ex.equipment}`)}</div>
       </div>
       {fav && <Star size={18} className="text-warn fill-warn shrink-0" />}
@@ -41,9 +46,9 @@ export default function LibraryPage() {
   const [filters, setFilters] = useState(false)
 
   const list = useMemo(() => {
-    const needle = q.trim().toLowerCase()
+    const needle = fold(q.trim())
     return EXERCISE_LIST.filter((e) => {
-      if (needle && !(e.name.en.toLowerCase().includes(needle) || e.name.ar.includes(needle) || e.termEn.toLowerCase().includes(needle) || e.id.includes(needle))) return false
+      if (needle && ![e.name.en, e.name.ar, e.termEn, e.id].some((x) => fold(x).includes(needle))) return false
       if (muscle && !e.muscles.includes(muscle)) return false
       if (equip && e.equipment !== equip) return false
       if (pattern && e.pattern !== pattern) return false
@@ -57,7 +62,7 @@ export default function LibraryPage() {
 
   return (
     <main className="page">
-      <PageHeader title={t('library.title')} right={<IconButton label={t('nav.settings')} onClick={() => nav('/settings')}><SettingsIcon /></IconButton>} />
+      <PageHeader title={t('library.title')} />
       <div className="relative mb-3">
         <Search size={20} className="absolute top-1/2 -translate-y-1/2 start-3 text-muted" />
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('library.search')} className="w-full h-12 rounded-2xl bg-surface border border-border ps-11 pe-3 outline-none focus:border-accent" />
@@ -71,15 +76,16 @@ export default function LibraryPage() {
         {list.map((ex) => <ExerciseRow key={ex.id} ex={ex} fav={favorites.includes(ex.id)} onClick={() => nav(`/library/${ex.id}`)} />)}
         {!list.length && <Empty text={t('library.noResults')} />}
       </div>
-      <BottomSheet open={filters} onClose={() => setFilters(false)} title={t('library.filters')}>
+      <BottomSheet open={filters} onClose={() => setFilters(false)} title={t('library.filters')} footer={
+        <div className="flex gap-2">
+          <Button className="flex-1" onClick={() => setFilters(false)}>{t('common.done')} ({list.length})</Button>
+          <Button variant="secondary" disabled={!activeCount} onClick={() => { setMuscle(null); setEquip(null); setPattern(null); setDiff(null); setPosture(false) }}>{t('common.clear')}</Button>
+        </div>
+      }>
         <Section label={t('library.muscle')}>{MUSCLES.map((m) => <Chip key={m} active={muscle === m} onClick={() => setMuscle(muscle === m ? null : m)}>{t(`muscles.${m}`)}</Chip>)}</Section>
         <Section label={t('library.equipment')}>{EQUIP.map((m) => <Chip key={m} active={equip === m} onClick={() => setEquip(equip === m ? null : m)}>{t(`equipment.${m}`)}</Chip>)}</Section>
         <Section label={t('library.pattern')}>{PATTERNS.map((m) => <Chip key={m} active={pattern === m} onClick={() => setPattern(pattern === m ? null : m)}>{t(`patterns.${m}`)}</Chip>)}</Section>
         <Section label={t('library.difficulty')}>{([1, 2, 3] as Difficulty[]).map((m) => <Chip key={m} active={diff === m} onClick={() => setDiff(diff === m ? null : m)}>{t(`difficulty.${m}`)}</Chip>)}</Section>
-        <div className="flex gap-2 mt-4">
-          <button className="tap flex-1 rounded-2xl bg-accent text-black font-semibold" onClick={() => setFilters(false)}>{t('common.done')} ({list.length})</button>
-          <button className="tap px-4 rounded-2xl bg-surface-2 border border-border" onClick={() => { setMuscle(null); setEquip(null); setPattern(null); setDiff(null); setPosture(false) }}>{t('common.clear')}</button>
-        </div>
       </BottomSheet>
     </main>
   )

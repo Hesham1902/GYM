@@ -14,7 +14,7 @@ import { useUi } from '@/stores/uiStore'
 export default function SummaryPage() {
   const { id = '' } = useParams()
   const nav = useNavigate()
-  const { t, l } = useT()
+  const { t, l, n } = useT()
   const toast = useUi((s) => s.toast)
   const [s, setS] = useState<WorkoutSession | null>(null)
   useEffect(() => { sessionsRepo.get(id).then((x) => setS(x ?? null)) }, [id])
@@ -26,12 +26,12 @@ export default function SummaryPage() {
       <PageHeader title={t('workout.summary')} sub={l(PROGRAM[s.dayKind].name)} />
       <div className="grid grid-cols-3 gap-2 mb-3">
         <Stat label={t('workout.duration')} value={fmtDuration((s.endedAt ?? s.startedAt) - s.startedAt)} />
-        <Stat label={t('workout.volume')} value={`${s.volumeKg} ${t('common.kg')}`} />
+        <Stat label={`${t('workout.volume')} (${t('common.kg')})`} value={String(s.volumeKg)} />
         <Stat label={t('workout.setsDone')} value={String(s.setCount)} />
       </div>
       <Card className="mb-3">
         <div className="font-semibold mb-2 flex items-center gap-2"><Trophy size={18} className="text-warn" />{t('workout.prs')}</div>
-        {s.prs.length ? <ul className="space-y-1 text-sm">{s.prs.map((p, i) => <li key={i}>{l(EXERCISES[p.exerciseId]?.name)}: <b>{fmtKg(p.weight)}×{p.reps}</b> <span className="text-muted">({p.kind === 'weight' ? t('analytics.bestWeight') : `e1RM ${fmtKg(p.est1rm)}`})</span></li>)}</ul> : <p className="text-sm text-muted">{t('workout.noPrs')}</p>}
+        {s.prs.length ? <ul className="space-y-1 text-sm">{s.prs.map((p, i) => <li key={i} className="flex items-baseline justify-between gap-2"><span className="min-w-0">{n(EXERCISES[p.exerciseId]?.name)}</span><span className="shrink-0 tabular-nums"><bdi dir="ltr"><b>{fmtKg(p.weight)}×{p.reps}</b></bdi> <span className="text-muted text-xs">{p.kind === 'weight' ? t('analytics.bestWeight') : <bdi dir="ltr">e1RM {fmtKg(p.est1rm)}</bdi>}</span></span></li>)}</ul> : <p className="text-sm text-muted">{t('workout.noPrs')}</p>}
       </Card>
       <Card className="mb-3">
         <div className="flex items-center justify-between"><span>{t('workout.postureCheck')}</span><Toggle checked={s.postureDone} onChange={(v) => save({ postureDone: v })} label={t('workout.postureCheck')} /></div>

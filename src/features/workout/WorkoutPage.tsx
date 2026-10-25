@@ -5,6 +5,7 @@ import { useT } from '@/i18n'
 import { useSettings } from '@/stores/settingsStore'
 import { useActive } from '@/stores/activeWorkoutStore'
 import { Button, Card, PageHeader } from '@/components/ui'
+import { Mixed } from '@/components/Mixed'
 import { PROGRAM, TRAINING_DAYS } from '@/data/program'
 import { EXERCISES } from '@/data/exercises'
 import { buildWorkout, resumeFromSession } from '@/engine/workoutBuilder'
@@ -18,7 +19,7 @@ import LiveWorkout from './LiveWorkout'
 
 export default function WorkoutPage({ live }: { live?: boolean }) {
   const nav = useNavigate()
-  const { t, l, lang } = useT()
+  const { t, l, n, lang } = useT()
   const settings = useSettings()
   const workout = useActive((s) => s.workout)
   const start = useActive((s) => s.start)
@@ -49,11 +50,11 @@ export default function WorkoutPage({ live }: { live?: boolean }) {
     return (
       <Card className={`mb-3 ${primary ? 'border-accent' : ''}`}>
         <div className="flex items-center justify-between mb-2">
-          <div><div className="text-lg font-bold">{l(day.name)}</div><div className="text-xs text-muted">{t('common.week')} {week} · {setsForWeek(week, false, true)} {t('common.sets')} · ~{rirForWeek(week)} RIR</div></div>
+          <div><div className="text-lg font-bold">{l(day.name)}</div><div className="text-xs text-muted"><Mixed>{`${t('common.week')} ${week} · ${setsForWeek(week, false, true)} ${t(setsForWeek(week, false, true) === 1 ? 'common.set' : 'common.sets')} · RIR ${rirForWeek(week)}`}</Mixed></div></div>
           <Button onClick={() => begin(kind)} disabled={busy} className={primary ? 'h-12 px-5' : 'h-11'} variant={primary ? 'primary' : 'secondary'}><Play size={18} />{t('common.start')}</Button>
         </div>
         <ol className="text-sm text-muted space-y-0.5">
-          {day.slots.map((s, i) => { const ex = EXERCISES[settings.permanentSwaps[s.slotId] ?? s.exerciseId]; return <li key={s.slotId}>{i + 1}. {l(ex?.name)} <span className="opacity-70">{s.repRange[0]}–{s.repRange[1]}</span></li> })}
+          {day.slots.map((s, i) => { const ex = EXERCISES[settings.permanentSwaps[s.slotId] ?? s.exerciseId]; return <li key={s.slotId} className="flex gap-2"><span className="w-4 shrink-0">{i + 1}</span><span className="flex-1 min-w-0">{n(ex?.name)}</span><bdi dir="ltr" className="opacity-70 shrink-0 tabular-nums">{s.repRange[0]}–{s.repRange[1]}</bdi></li> })}
         </ol>
       </Card>
     )
@@ -63,7 +64,7 @@ export default function WorkoutPage({ live }: { live?: boolean }) {
       <PageHeader title={t('workout.title')} />
       {unfinished.map((s) => (
         <Card key={s.id} className="mb-3 border-warn/60 flex items-center justify-between">
-          <div><div className="font-semibold">{t('history.unfinished')}: {l(PROGRAM[s.dayKind].name)}</div><div className="text-xs text-muted">{fmtDate(s.dateKey, lang)} · {s.setCount} {t('common.sets')}</div></div>
+          <div><div className="font-semibold">{t('history.unfinished')}: {l(PROGRAM[s.dayKind].name)}</div><div className="text-xs text-muted"><Mixed>{`${fmtDate(s.dateKey, lang)} · ${s.setCount} ${t(s.setCount === 1 ? 'common.set' : 'common.sets')}`}</Mixed></div></div>
           <Button variant="secondary" className="h-11" onClick={() => resume(s)}><RotateCcw size={16} />{t('common.resume')}</Button>
         </Card>
       ))}

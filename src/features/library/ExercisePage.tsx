@@ -18,7 +18,7 @@ import { fmtKg } from '@/utils/num'
 export default function ExercisePage() {
   const { exerciseId = '' } = useParams()
   const nav = useNavigate()
-  const { t, l, lang } = useT()
+  const { t, l, n, lang } = useT()
   const ex = EXERCISES[exerciseId]
   const favorites = useSettings((s) => s.favorites)
   const toggleFav = useSettings((s) => s.toggleFavorite)
@@ -34,7 +34,7 @@ export default function ExercisePage() {
 
   return (
     <main className="page">
-      <PageHeader title={l(ex.name)} back sub={`${t(`muscles.${ex.muscles[0]}`)} · ${t(`equipment.${ex.equipment}`)}`}
+      <PageHeader title={<Mixed>{n(ex.name)}</Mixed>} back sub={<>{n(ex.name) !== ex.termEn && <><bdi dir="ltr">{ex.termEn}</bdi> · </>}{t(`muscles.${ex.muscles[0]}`)} · {t(`equipment.${ex.equipment}`)}</>}
         right={<IconButton label={fav ? t('library.unfavorite') : t('library.favorite')} onClick={() => toast(toggleFav(ex.id) ? t('toast.favAdded') : t('toast.favRemoved'), 'success')}><Star className={fav ? 'text-warn fill-warn' : ''} /></IconButton>} />
       <Card className="p-2 mb-3"><ExerciseMedia id={ex.id} /></Card>
       <Card className="mb-3"><GuideBody exerciseId={ex.id} /></Card>
@@ -51,11 +51,11 @@ export default function ExercisePage() {
             <button key={a.exerciseId} onClick={() => nav(`/library/${alt.id}`)} className="card p-3 text-start active:bg-surface-2">
               <div className="flex items-center gap-3">
                 <ExerciseThumb id={alt.id} className="w-14 h-14 rounded-xl shrink-0" />
-                <div className="flex-1 min-w-0"><div className="font-semibold leading-tight">{l(alt.name)}</div><div className="text-xs text-muted">{t(`equipment.${alt.equipment}`)}</div></div>
+                <div className="flex-1 min-w-0"><div className="font-semibold leading-tight">{n(alt.name)}</div><div className="text-xs text-muted">{n(alt.name) !== alt.termEn && <><bdi dir="ltr">{alt.termEn}</bdi> · </>}{t(`equipment.${alt.equipment}`)}</div></div>
                 <ChevronRight className="text-muted rtl:flip" />
               </div>
-              <div className="mt-2 text-sm"><span className="text-muted">{t('library.differs')}: </span>{l(a.differs)}</div>
-              <div className="mt-1 text-sm"><span className="text-muted">{t('library.chooseWhen')}: </span>{l(a.chooseWhen)}</div>
+              <div className="mt-2 text-sm"><span className="text-muted">{t('library.differs')}: </span><Mixed>{l(a.differs)}</Mixed></div>
+              <div className="mt-1 text-sm"><span className="text-muted">{t('library.chooseWhen')}: </span><Mixed>{l(a.chooseWhen)}</Mixed></div>
             </button>
           )
         })}

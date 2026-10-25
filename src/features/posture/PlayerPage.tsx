@@ -9,6 +9,7 @@ import { FigureView } from '@/figure/FigureView'
 import { getFigure } from '@/data/figures'
 import { ExerciseThumb } from '@/components/ExerciseMedia'
 import { Ring } from '@/components/Ring'
+import { Mixed } from '@/components/Mixed'
 import { ROUTINES } from '@/data/routines'
 import { EXERCISES } from '@/data/exercises'
 import { postureRepo } from '@/db/repo/posture'
@@ -38,7 +39,7 @@ function expand(routineId: string): Phase[] {
 export default function PlayerPage() {
   const { routineId = '' } = useParams()
   const nav = useNavigate()
-  const { t, l } = useT()
+  const { t, l, n } = useT()
   const sound = useSettings((s) => s.sound), vibration = useSettings((s) => s.vibration)
   const toast = useUi((s) => s.toast)
   const routine = ROUTINES[routineId]
@@ -93,10 +94,11 @@ export default function PlayerPage() {
       <div className="flex gap-1 mb-3">{routine.steps.map((_, k) => <div key={k} className={`h-1.5 flex-1 rounded-full ${k < ph.stepIdx ? 'bg-accent' : k === ph.stepIdx ? 'bg-accent/50' : 'bg-surface-2'}`} />)}</div>
       <div className="card p-3 flex-1 flex flex-col items-center justify-center text-center">
         <div className="w-full max-w-xs aspect-square rounded-2xl overflow-hidden">{getFigure(ex.id) ? <FigureView figure={getFigure(ex.id)!} className="w-full h-full" /> : <ExerciseThumb id={ex.id} className="w-full h-full" />}</div>
-        <h2 className="text-2xl font-bold mt-2">{l(ex.name)}</h2>
+        <h2 className="text-2xl font-bold mt-2">{n(ex.name)}</h2>
+        {n(ex.name) !== ex.termEn && <div className="text-sm text-muted"><bdi dir="ltr">{ex.termEn}</bdi></div>}
         {ph.side && <div className={`mt-1 px-3 py-1 rounded-full text-sm font-semibold ${ph.side === 'L' ? 'bg-info/20 text-info' : 'bg-warn/20 text-warn'}`}>{ph.side === 'L' ? t('posture.left') : t('posture.right')}</div>}
-        <p className="text-muted mt-2 text-[15px] leading-relaxed">{ph.kind === 'ready' ? t('posture.getReady') : l(step.cue)}</p>
-        <div className="text-sm text-muted mt-1">{step.mode === 'hold' ? `${t('posture.hold')} ${step.seconds}${t('common.sec')}` : `${step.reps} ${step.mode === 'breaths' ? t('posture.breathe') : t('common.reps')}`}{step.sides ? ` · ${t('workout.perSide')}` : ''}</div>
+        <p className="text-muted mt-2 text-[15px] leading-relaxed">{ph.kind === 'ready' ? t('posture.getReady') : <Mixed>{l(step.cue)}</Mixed>}</p>
+        <div className="text-sm text-muted mt-1"><Mixed>{`${step.mode === 'hold' ? `${t('posture.hold')} ${step.seconds} ${t('common.sec')}` : `${step.reps} ${step.mode === 'breaths' ? t('posture.breathe') : t('common.reps')}`}${step.sides ? ` · ${t('workout.perSide')}` : ''}`}</Mixed></div>
       </div>
       <div className="flex items-center justify-center gap-6 my-4">
         <Ring value={progressV} size={120} stroke={10} color={ph.kind === 'ready' ? 'var(--color-warn)' : 'var(--color-accent)'}><span className="text-3xl tabular-nums">{Math.ceil(remain / 1000)}</span></Ring>

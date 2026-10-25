@@ -4,15 +4,15 @@ import { useT } from '@/i18n'
 import { Card, Chip, Empty, PageHeader } from '@/components/ui'
 import { LineSeries, Bars } from '@/components/charts'
 import { db } from '@/db/db'
-import { EXERCISES, EXERCISE_LIST } from '@/data/exercises'
+import { EXERCISES } from '@/data/exercises'
 import { est1rm } from '@/engine/oneRm'
 import { volumeByMuscle, totalVolume } from '@/engine/volume'
-import { addDays, dateKey, startOfWeekKey } from '@/utils/date'
+import { addDays, dateKey, fmtDate, startOfWeekKey } from '@/utils/date'
 import { fmtKg } from '@/utils/num'
 import type { MuscleGroup } from '@/types'
 
 export default function AnalyticsPage() {
-  const { t, l } = useT()
+  const { t, n, lang } = useT()
   const sessions = useLiveQuery(() => db.sessions.where('status').equals('done').sortBy('startedAt'), []) ?? []
   const rows = useLiveQuery(() => db.exerciseSets.orderBy('loggedAt').toArray(), []) ?? []
   const logged = useMemo(() => [...new Set(rows.map((r) => r.exerciseId))].filter((id) => EXERCISES[id]), [rows])
@@ -61,7 +61,6 @@ export default function AnalyticsPage() {
       <Card className="mb-4 p-3">
         <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-3 px-3 pb-2">{logged.map((id) => <Chip key={id} active={pick === id} onClick={() => setExId(id)}>{EXERCISES[id].termEn}</Chip>)}</div>
         {trend.length ? <LineSeries data={trend} keys={[{ k: 'e1rm', color: 'var(--color-accent)', name: t('analytics.est1rm') }, { k: 'top', color: 'var(--color-info)', dashed: true, name: t('analytics.topSet') }]} /> : <Empty text={t('analytics.noData')} />}
-        <p className="text-[11px] text-muted mt-1">{t('analytics.epleyNote')}</p>
       </Card>
 
       <h2 className="section">{t('analytics.weeklyVolume')}</h2>
@@ -69,10 +68,9 @@ export default function AnalyticsPage() {
 
       <h2 className="section">{t('analytics.prs')}</h2>
       <Card className="mb-4 p-0 divide-y divide-border">
-        {prs.slice(0, 20).map(([id, p]) => <div key={id} className="flex items-center justify-between px-3 py-2 text-sm"><span>{l(EXERCISES[id].name)}</span><span className="tabular-nums"><b>{fmtKg(p.w)}×{p.r}</b> <span className="text-muted">e1RM {fmtKg(p.e1)} · {p.date.slice(5)}</span></span></div>)}
+        {prs.slice(0, 20).map(([id, p]) => <div key={id} className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm"><div className="min-w-0"><div>{n(EXERCISES[id].name)}</div><div className="text-xs text-muted">{fmtDate(p.date, lang)}</div></div><div className="text-end shrink-0 tabular-nums"><bdi dir="ltr" className="font-bold">{fmtKg(p.w)}×{p.r}</bdi><div className="text-xs text-muted"><bdi dir="ltr">e1RM {fmtKg(p.e1)}</bdi></div></div></div>)}
         {!prs.length && <Empty text={t('analytics.noData')} />}
       </Card>
-      <span className="hidden">{EXERCISE_LIST.length}</span>
     </main>
   )
 }

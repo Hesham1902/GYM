@@ -38,9 +38,7 @@ export default function PhotosPage() {
   return (
     <main className="page">
       <PageHeader title={t('photos.title')} back right={<Button className="h-11" onClick={() => setAdding(true)}><Camera size={18} />{t('photos.add')}</Button>} />
-      <p className="text-xs text-muted flex items-center gap-1 mb-3"><Lock size={12} />{t('photos.private')}</p>
       <div className="flex gap-2 mb-3">{(['side', 'front', 'back'] as PhotoView[]).map((v) => <Chip key={v} active={view === v} onClick={() => { setView(v); setCompare([]) }}>{t(`photos.${v}`)}</Chip>)}</div>
-      {view === 'side' && <p className="text-xs text-muted mb-3">{t('photos.tipSide')}</p>}
       {sorted.length === 2 && (
         <Card className="mb-3 p-2">
           <div className="grid grid-cols-2 gap-2">
@@ -54,16 +52,18 @@ export default function PhotosPage() {
           {list.map((p) => (
             <div key={p.id} className={`relative rounded-xl overflow-hidden border-2 ${compare.includes(p.id) ? 'border-accent' : 'border-transparent'}`}>
               <Img blob={p.thumb} className="w-full aspect-[3/4] object-cover" onClick={() => toggleCompare(p.id)} />
-              <button onClick={() => setOpen(p)} className="absolute bottom-0 inset-x-0 bg-black/60 text-[11px] text-white py-1 text-center">{fmtDate(p.dateKey, lang)}</button>
+              <button onClick={() => setOpen(p)} className="absolute bottom-0 inset-x-0 bg-black/60 text-[11px] text-white min-h-8 text-center">{fmtDate(p.dateKey, lang)}</button>
             </div>
           ))}
         </div>
       </>}
       <BottomSheet open={adding} onClose={() => setAdding(false)} title={t('photos.add')}>
+        {view === 'side' && <p className="text-sm text-muted mb-3">{t('photos.tipSide')}</p>}
         <div className="flex flex-col gap-2">
           <Button onClick={() => camRef.current?.click()}><Camera size={18} />{t('photos.takePhoto')}</Button>
           <Button variant="secondary" onClick={() => libRef.current?.click()}><Images size={18} />{t('photos.choose')}</Button>
         </div>
+        <p className="text-xs text-muted flex items-center gap-1.5 mt-3"><Lock size={12} className="shrink-0" />{t('photos.private')}</p>
         <input ref={camRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = '' }} />
         <input ref={libRef} type="file" accept="image/*" className="hidden" onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = '' }} />
       </BottomSheet>
