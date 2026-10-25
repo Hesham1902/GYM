@@ -97,7 +97,7 @@ export default function LiveWorkout() {
     const open = workout.slots.filter((s) => setsForSlot(workout, s.slotId).filter((x) => !x.isWarmup).length < s.prescription.sets && !workout.skips.some((k) => k.slotId === s.slotId))
     if (!confirm(open.length ? t('workout.finishEarly') : t('workout.finishConfirm'))) return
     setFinishing(true)
-    try { const session = await finishWorkout(workout); clear(); nav(`/workout/summary/${session.id}`, { replace: true }) }
+    try { const session = await finishWorkout(workout); nav(`/workout/summary/${session.id}`, { replace: true }); setTimeout(() => clear(), 0) }
     catch { toast(t('toast.error'), 'error'); setFinishing(false) }
   }
   const discard = async () => {

@@ -53,7 +53,7 @@ export function SwapSheet({ slot, onClose }: { slot: ActiveSlot | null; onClose:
   const [busy, setBusy] = useState(false)
   const ex = slot ? EXERCISES[slot.exerciseId] : null
   const originalId = workout && slot ? PROGRAM[workout.dayKind].slots.find((s) => s.slotId === slot.slotId)?.exerciseId : undefined
-  const options = ex ? [...ex.alternatives, ...(originalId && originalId !== ex.id ? [{ exerciseId: originalId, differs: { en: 'Back to the programmed exercise.', ar: 'رجوع للتمرين الأصلي في البرنامج.' }, chooseWhen: { en: 'Machine is free again.', ar: 'الجهاز فضي تاني.' } }] : [])] : []
+  const options = ex ? [...ex.alternatives, ...(originalId && originalId !== ex.id && !ex.alternatives.some((a) => a.exerciseId === originalId) ? [{ exerciseId: originalId, differs: { en: 'Back to the programmed exercise.', ar: 'رجوع للتمرين الأصلي في البرنامج.' }, chooseWhen: { en: 'Machine is free again.', ar: 'الجهاز فضي تاني.' } }] : [])] : []
   const choose = async (toId: string) => {
     if (!slot || !workout || busy) return
     setBusy(true)

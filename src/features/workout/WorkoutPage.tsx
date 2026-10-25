@@ -49,7 +49,7 @@ export default function WorkoutPage({ live }: { live?: boolean }) {
     return (
       <Card className={`mb-3 ${primary ? 'border-accent' : ''}`}>
         <div className="flex items-center justify-between mb-2">
-          <div><div className="text-lg font-bold">{l(day.name)}</div><div className="text-xs text-muted">{t('common.week')} {week} · {setsForWeek(week, false, true)}×{t('common.sets')} · ~{rirForWeek(week)} RIR</div></div>
+          <div><div className="text-lg font-bold">{l(day.name)}</div><div className="text-xs text-muted">{t('common.week')} {week} · {setsForWeek(week, false, true)} {t('common.sets')} · ~{rirForWeek(week)} RIR</div></div>
           <Button onClick={() => begin(kind)} disabled={busy} className={primary ? 'h-12 px-5' : 'h-11'} variant={primary ? 'primary' : 'secondary'}><Play size={18} />{t('common.start')}</Button>
         </div>
         <ol className="text-sm text-muted space-y-0.5">

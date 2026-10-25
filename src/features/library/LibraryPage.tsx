@@ -19,7 +19,7 @@ export function ExerciseRow({ ex, onClick, fav }: { ex: Exercise; onClick: () =>
     <button onClick={onClick} className="w-full card p-3 flex items-center gap-3 text-start active:bg-surface-2">
       <div className="w-16 h-16 rounded-xl bg-bg shrink-0 overflow-hidden"><ExerciseFigure poseId={ex.poseId} animate={false} frame="end" className="w-full h-full" /></div>
       <div className="flex-1 min-w-0">
-        <div className="font-semibold truncate">{l(ex.name)}</div>
+        <div className="font-semibold leading-tight line-clamp-2">{l(ex.name)}</div>
         <div className="text-xs text-muted truncate">{t(`muscles.${ex.muscles[0]}`)} · {t(`equipment.${ex.equipment}`)} · {t(`difficulty.${ex.difficulty}`)}</div>
       </div>
       {fav && <Star size={18} className="text-warn fill-warn shrink-0" />}
