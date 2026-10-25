@@ -26,7 +26,7 @@ export function Bars({ data, k, color = 'var(--color-accent)', height = 200, nam
         <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
           <CartesianGrid stroke="var(--color-border)" strokeDasharray="2 4" vertical={false} />
           <XAxis dataKey="x" {...axis} interval={0} />
-          <YAxis {...axis} width={48} />
+          <YAxis {...axis} width={48} allowDecimals={false} />
           <Tooltip {...tip} cursor={{ fill: 'var(--color-surface-2)' }} />
           <Bar dataKey={k} name={name ?? k} fill={color} radius={[6, 6, 0, 0]} isAnimationActive={false} />
         </BarChart>

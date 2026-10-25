@@ -18,9 +18,9 @@ export function Calendar({ month, onMonth, marks, selected, onSelect }: { month:
   return (
     <div className="card p-3">
       <div className="flex items-center justify-between mb-2">
-        <button aria-label="prev" className="tap rounded-full" onClick={() => onMonth(new Date(y, m - 1, 1))}><ChevronLeft className="rtl:flip mx-auto" /></button>
+        <button aria-label={t('history.prevMonth')} className="tap rounded-full" onClick={() => onMonth(new Date(y, m - 1, 1))}><ChevronLeft className="rtl:flip mx-auto" /></button>
         <div className="font-semibold">{title}</div>
-        <button aria-label="next" className="tap rounded-full" onClick={() => onMonth(new Date(y, m + 1, 1))}><ChevronRight className="rtl:flip mx-auto" /></button>
+        <button aria-label={t('history.nextMonth')} className="tap rounded-full" onClick={() => onMonth(new Date(y, m + 1, 1))}><ChevronRight className="rtl:flip mx-auto" /></button>
       </div>
       <div className="grid grid-cols-7 text-center text-[11px] text-muted mb-1">{[6, 0, 1, 2, 3, 4, 5].map((d) => <div key={d}>{t(`weekdays.${d as 0}`)}</div>)}</div>
       <div className="grid grid-cols-7 gap-1">

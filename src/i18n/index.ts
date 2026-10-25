@@ -33,11 +33,19 @@ export function useLang(): Lang {
   return useSettings((s) => s.language)
 }
 
+/** Arabic exercise names end with "(English term)"; the brackets mirror and wrap badly in RTL, and the term is shown on its own line where it helps. */
+export function exerciseName(v: L10n | undefined | null, lang: Lang): string {
+  if (!v) return ''
+  const s = v[lang] || v.en
+  return lang === 'ar' ? s.replace(/\s*\([^()]*\)\s*$/, '') : s
+}
+
 export function useT() {
   const lang = useLang()
   const t = useCallback((key: TKey, params?: Record<string, string | number>) => translate(lang, key, params), [lang])
   const l = useCallback((v: L10n | undefined | null) => (v ? v[lang] || v.en : ''), [lang])
-  return { t, l, lang, isRtl: lang === 'ar' }
+  const n = useCallback((v: L10n | undefined | null) => exerciseName(v, lang), [lang])
+  return { t, l, n, lang, isRtl: lang === 'ar' }
 }
 
 export function useApplyLocale() {

@@ -38,8 +38,8 @@ export function PageHeader({ title, back, right, sub }: { title: ReactNode; back
         </IconButton>
       )}
       <div className="flex-1 min-w-0">
-        <h1 className="text-2xl font-bold truncate">{title}</h1>
-        {sub && <div className="text-sm text-muted truncate">{sub}</div>}
+        <h1 className="text-2xl font-bold leading-tight line-clamp-2">{title}</h1>
+        {sub && <div className="text-sm text-muted line-clamp-2">{sub}</div>}
       </div>
       {right}
     </header>
@@ -58,8 +58,9 @@ export function Chip({ active, children, onClick, className = '' }: { active?: b
   return (
     <button
       type="button"
+      aria-pressed={active}
       onClick={onClick}
-      className={`min-h-10 px-3.5 rounded-full text-sm font-medium whitespace-nowrap border transition ${active ? 'bg-accent text-black border-accent' : 'bg-surface text-text border-border'} ${className}`}
+      className={`min-h-11 px-3.5 rounded-full text-sm font-medium whitespace-nowrap border transition ${active ? 'bg-accent text-black border-accent' : 'bg-surface text-text border-border'} ${className}`}
     >
       {children}
     </button>
@@ -87,9 +88,11 @@ export function Toggle({ checked, onChange, label }: { checked: boolean; onChang
       aria-checked={checked}
       aria-label={label}
       onClick={() => onChange(!checked)}
-      className={`relative w-14 h-8 rounded-full transition ${checked ? 'bg-accent' : 'bg-surface-2 border border-border'}`}
+      className="tap inline-flex items-center justify-center shrink-0 -my-2"
     >
-      <span className={`absolute top-1 h-6 w-6 rounded-full bg-white transition ${checked ? 'start-7' : 'start-1'}`} />
+      <span className={`relative w-14 h-8 rounded-full transition ${checked ? 'bg-accent' : 'bg-surface-2 border border-border'}`}>
+        <span className={`absolute top-1 h-6 w-6 rounded-full bg-white transition ${checked ? 'start-7' : 'start-1'}`} />
+      </span>
     </button>
   )
 }

@@ -1,4 +1,5 @@
 import { useUi } from '@/stores/uiStore'
+import { Mixed } from './Mixed'
 
 export function Toasts() {
   const toasts = useUi((s) => s.toasts)
@@ -8,9 +9,9 @@ export function Toasts() {
       {toasts.map((t) => (
         <div
           key={t.id}
-          className={`px-4 py-2 rounded-full text-sm shadow-lg ${t.kind === 'error' ? 'bg-danger text-white' : t.kind === 'success' ? 'bg-accent text-black' : 'bg-surface-2 text-text'}`}
+          className={`max-w-[calc(100vw-32px)] px-4 py-2 rounded-2xl text-sm text-center shadow-lg ${t.kind === 'error' ? 'bg-danger text-white' : t.kind === 'success' ? 'bg-accent text-black' : 'bg-surface-2 text-text'}`}
         >
-          {t.text}
+          <Mixed>{t.text}</Mixed>
         </div>
       ))}
     </div>
