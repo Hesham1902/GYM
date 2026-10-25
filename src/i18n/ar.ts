@@ -28,6 +28,7 @@ export const ar: Dict = {
   },
   difficulty: { 1: 'مبتدئ', 2: 'متوسط', 3: 'متقدم' },
   dashboard: {
+    heroRest: 'يوم راحة', heroRecovery: 'راحة نشطة', doPosture: 'روتين الظهر · {n} دقايق', otherDay: 'تمرّن يوم تاني', weekLine: 'الأسبوع {week}', nextWeekTitle: 'الأسبوع الجاي', setsPer: '{n} sets لكل تمرين', rirAbout: 'حوالي {rir} RIR', today: 'النهاردة', done: 'خلص',
     todayWorkout: 'تمرين النهاردة', restDay: 'يوم راحة', recoveryDay: 'راحة نشطة', startWorkout: 'ابدأ التمرين',
     resumeWorkout: 'كمّل التمرين', postureFix: 'تمرين الظهر 5 دقايق', postureDone: 'عملت تمرين الظهر النهاردة', postureTodo: 'لسه معملتوش',
     weekRing: 'الأسبوع ده', workoutsOf: '{done} من {total} تمارين', weightTrend: 'اتجاه الوزن', noWeight: 'سجّل وزنك',
@@ -37,6 +38,7 @@ export const ar: Dict = {
     quickStart: 'يوم تاني', inProgress: 'شغّال دلوقتي', exercises: '{n} تمارين', postureCard: 'تمارين الظهر',
   },
   workout: {
+    exercisesN: '{n} تمارين', setsN: '{n} sets', pickDaySub: 'اختار يوم تتمرن فيه',
     title: 'التمرين', setOf: 'Set {x} من {y}', target: 'الهدف', targetReps: '{min}–{max} reps', targetRir: 'حوالي {rir} RIR',
     lastTime: 'المرة اللي فاتت', noHistory: 'أول مرة: دوّر على وزن تعمل بيه الـ range كله وفاضل معاك 4 عدّات',
     logSet: 'سجّل الـ Set', weight: 'الوزن', reps: 'Reps', rir: 'RIR', warmup: 'Warm-up', warmupSet: 'Warm-up set',

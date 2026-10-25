@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Play, Flame, Lightbulb, Camera, ChevronRight, ChevronDown, Check } from 'lucide-react'
+import { Play, Flame, Lightbulb, Camera, ChevronRight, Check } from 'lucide-react'
 import { useT } from '@/i18n'
 import { useUi } from '@/stores/uiStore'
-import { Button, Card, Chip, PageHeader } from '@/components/ui'
+import { Button, Card, PageHeader } from '@/components/ui'
 import { BottomSheet } from '@/components/BottomSheet'
 import { LineSeries } from '@/components/charts'
 import { db } from '@/db/db'
@@ -22,7 +22,6 @@ export default function PosturePage() {
   const today = checkins.find((c) => c.dateKey === dateKey())
   const n = streak(checkins)
   const [checkin, setCheckin] = useState(false)
-  const [why, setWhy] = useState(false)
   const [stiff, setStiff] = useState(today?.stiffness ?? 5)
   const save = async (routineDone: boolean) => {
     await postureRepo.put({ id: today?.id ?? uid(), dateKey: dateKey(), stiffness: stiff, routineDone: routineDone || !!today?.routineDone, photoId: today?.photoId, notes: today?.notes, at: Date.now() })
@@ -32,33 +31,37 @@ export default function PosturePage() {
   return (
     <main className="page">
       <PageHeader title={t('posture.title')} sub={t('posture.subtitle')} />
-      <Card className="mb-3 flex items-center gap-3">
-        <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${n ? 'bg-warn/20 text-warn' : 'bg-surface-2 text-muted'}`}><Flame size={28} /></div>
-        <div className="flex-1">
-          <div className="font-bold">{n ? t('posture.streak', { n }) : t('posture.streakNone')}</div>
-          <div className="text-sm text-muted">{today?.routineDone ? t('posture.doneToday') : t('dashboard.postureTodo')}</div>
-        </div>
-        <Button variant="secondary" className="h-11 shrink-0" onClick={() => { setStiff(today?.stiffness ?? 5); setCheckin(true) }}>{today?.routineDone ? <Check size={18} /> : null}{t('posture.checkin')}</Button>
-      </Card>
 
-      {ROUTINE_ORDER.map((id, ri) => { const r = ROUTINES[id]; return (
-        <Card key={id} className="mb-3">
-          <div className="flex items-center justify-between mb-2">
-            <div><div className="font-bold">{l(r.name)}</div><div className="text-xs text-muted">{t('posture.minutes', { n: r.minutes })} · {t('posture.drills', { n: r.steps.length })}</div></div>
-            <Button variant={ri === 0 ? 'primary' : 'secondary'} className="h-11 shrink-0" onClick={() => nav(`/posture/play/${id}`)}><Play size={18} />{t('common.start')}</Button>
+      <section className="card p-4 mb-3 flex items-center gap-3">
+        <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 ${n ? 'bg-warn/15 text-warn' : 'bg-surface-2 text-muted'}`}><Flame size={24} /></div>
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold leading-tight">{n ? t('posture.streak', { n }) : t('posture.streakNone')}</div>
+          <div className="t-cap mt-0.5">{today?.routineDone ? t('posture.doneToday') : t('dashboard.postureTodo')}</div>
+        </div>
+        <Button variant={today?.routineDone ? 'secondary' : 'soft'} size="sm" onClick={() => { setStiff(today?.stiffness ?? 5); setCheckin(true) }}>{today?.routineDone ? <Check size={16} /> : null}{t('posture.checkin')}</Button>
+      </section>
+
+      {ROUTINE_ORDER.map((id) => { const r = ROUTINES[id]; return (
+        <section key={id} className="card p-4 mb-3">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 min-w-0">
+              <h2 className="t-h3">{l(r.name)}</h2>
+              <div className="t-cap mt-0.5">{t('posture.minutes', { n: r.minutes })} · {t('posture.drills', { n: r.steps.length })}</div>
+            </div>
+            <Button size="md" variant={id === 'daily' ? 'primary' : 'secondary'} onClick={() => nav(`/posture/play/${id}`)}><Play size={18} />{t('common.start')}</Button>
           </div>
-          <div className="flex flex-wrap gap-1.5">{r.steps.map((s, i) => <Chip key={i} className="!px-3 !text-xs" onClick={() => nav(`/library/${s.exerciseId}`)}>{EXERCISES[s.exerciseId]?.termEn}</Chip>)}</div>
-        </Card>
+          <p className="t-small text-muted mt-3 leading-relaxed num">{r.steps.map((s) => EXERCISES[s.exerciseId]?.termEn).join(' · ')}</p>
+        </section>
       ) })}
 
-      <div className="grid grid-cols-2 gap-2 mb-3">
-        <button onClick={() => nav('/posture/tips')} className="card p-3 flex items-center gap-2 text-start active:bg-surface-2"><Lightbulb className="text-warn shrink-0" /><span className="text-sm font-semibold flex-1">{t('posture.tips')}</span><ChevronRight size={18} className="text-muted rtl:flip" /></button>
-        <button onClick={() => nav('/photos')} className="card p-3 flex items-center gap-2 text-start active:bg-surface-2"><Camera className="text-info shrink-0" /><span className="text-sm font-semibold flex-1">{t('posture.photos')}</span><ChevronRight size={18} className="text-muted rtl:flip" /></button>
+      <div className="card mb-3 divide-y divide-border px-4">
+        <button onClick={() => nav('/posture/tips')} className="w-full flex items-center gap-3 min-h-14 text-start active:opacity-70"><Lightbulb className="text-warn shrink-0" size={22} /><span className="font-medium flex-1">{t('posture.tips')}</span><ChevronRight size={18} className="text-faint rtl:flip" /></button>
+        <button onClick={() => nav('/photos')} className="w-full flex items-center gap-3 min-h-14 text-start active:opacity-70"><Camera className="text-info shrink-0" size={22} /><span className="font-medium flex-1">{t('posture.photos')}</span><ChevronRight size={18} className="text-faint rtl:flip" /></button>
       </div>
 
-      {chart.length >= 2 && <Card className="mb-3 p-3"><div className="text-sm font-semibold mb-1">{t('posture.stiffnessHistory')}</div><LineSeries data={chart} keys={[{ k: 'stiffness', color: 'var(--color-warn)', name: t('posture.stiffness') }]} height={140} yDomain={[1, 10]} /></Card>}
+      {chart.length >= 2 && <Card className="mb-3"><div className="font-semibold mb-2">{t('posture.stiffnessHistory')}</div><LineSeries data={chart} keys={[{ k: 'stiffness', color: 'var(--color-warn)', name: t('posture.stiffness') }]} height={140} yDomain={[1, 10]} /></Card>}
 
-      <Card className="mb-3 py-0"><button onClick={() => setWhy(!why)} aria-expanded={why} className="w-full flex items-center justify-between min-h-12 text-start font-semibold">{t('posture.whyTitle')}<ChevronDown size={18} className={`text-muted transition ${why ? 'rotate-180' : ''}`} /></button>{why && <p className="text-sm text-muted leading-relaxed pb-4">{t('posture.why')}</p>}</Card>
+      <Card className="mb-3"><div className="font-semibold mb-1">{t('posture.whyTitle')}</div><p className="t-small text-muted leading-relaxed">{t('posture.why')}</p></Card>
 
       <BottomSheet open={checkin} onClose={() => setCheckin(false)} title={t('posture.checkin')}>
         <div className="text-sm text-muted mb-2">{t('posture.stiffness')}</div>

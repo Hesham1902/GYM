@@ -26,6 +26,7 @@ export const en = {
   },
   difficulty: { 1: 'Beginner', 2: 'Intermediate', 3: 'Advanced' },
   dashboard: {
+    heroRest: 'Rest day', heroRecovery: 'Active recovery', doPosture: 'Posture routine · {n} min', otherDay: 'Train a different day', weekLine: 'Week {week}', nextWeekTitle: 'Next week', setsPer: '{n} sets per exercise', rirAbout: 'about {rir} RIR', today: 'Today', done: 'Done',
     todayWorkout: "Today's workout", restDay: 'Rest day', recoveryDay: 'Active recovery', startWorkout: 'Start Workout',
     resumeWorkout: 'Resume workout', postureFix: '5-min Posture Fix', postureDone: 'Posture done today', postureTodo: 'Not done yet',
     weekRing: 'This week', workoutsOf: '{done} of {total} workouts', weightTrend: 'Weight trend', noWeight: 'Log your weight',
@@ -35,6 +36,7 @@ export const en = {
     quickStart: 'Other day', inProgress: 'In progress', exercises: '{n} exercises', postureCard: 'Posture',
   },
   workout: {
+    exercisesN: '{n} exercises', setsN: '{n} sets', pickDaySub: 'Pick a day to train',
     title: 'Live Workout', setOf: 'Set {x} of {y}', target: 'Target', targetReps: '{min}–{max} reps', targetRir: '~{rir} RIR',
     lastTime: 'Last time', noHistory: 'First time — find a weight you can do for the full range with ~4 reps left',
     logSet: 'Log set', weight: 'Weight', reps: 'Reps', rir: 'RIR', warmup: 'Warm-up', warmupSet: 'Warm-up set',

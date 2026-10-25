@@ -43,7 +43,7 @@ export default function BodyPage() {
 
   return (
     <main className="page">
-      <PageHeader title={t('body.title')} back right={<Button className="h-11" onClick={openToday}>{t('body.logToday')}</Button>} />
+      <PageHeader title={t('body.title')} back right={<Button size="sm" onClick={openToday}>{t('body.logToday')}</Button>} />
       {entries.length > 0 && <>
       <div className="grid grid-cols-3 gap-2 mb-3">
         <Card className="p-3 text-center"><div className="text-xs text-muted">{t('body.latest')}</div><div className="text-xl font-bold">{latest?.weightKg ?? '–'}</div></Card>

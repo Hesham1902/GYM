@@ -10,9 +10,8 @@ import { PROGRAM } from '@/data/program'
 import { Stepper } from '@/components/Stepper'
 import { Segmented } from '@/components/Segmented'
 import { BottomSheet } from '@/components/BottomSheet'
-import { Button, Chip } from '@/components/ui'
+import { Button, Chip, IconButton, N, Pill } from '@/components/ui'
 import { ExerciseThumb } from '@/components/ExerciseMedia'
-import { Mixed } from '@/components/Mixed'
 import { confirmSheet } from '@/components/Confirm'
 import { RestTimerBar } from './RestTimerBar'
 import { FormSheet, SkipSheet, SwapSheet, WarmupSheet } from './sheets'
@@ -116,70 +115,78 @@ export default function LiveWorkout() {
 
   return (
     <main className="page page-notab flex flex-col min-h-dvh">
-      <header className="flex items-center gap-2 mb-2">
+      <header className="flex items-center gap-2 mb-3">
         <div className="flex-1 min-w-0">
-          <div className="font-bold truncate">{l(PROGRAM[workout.dayKind].name)}</div>
-          <div className="text-xs text-muted tabular-nums"><bdi dir="ltr">{fmtDuration(now - workout.startedAt)}</bdi> · {doneCount}/{workout.slots.length}</div>
+          <div className="t-h3 truncate">{l(PROGRAM[workout.dayKind].name)}</div>
+          <div className="t-cap"><N>{fmtDuration(now - workout.startedAt)}</N> · <N>{doneCount}/{workout.slots.length}</N></div>
         </div>
-        <Button variant="secondary" onClick={finish} disabled={finishing} className="h-11 px-4"><Flag size={16} />{t('workout.finish')}</Button>
-        <button aria-label={t('workout.actions')} className="tap rounded-full text-muted" onClick={() => setSheet('menu')}><MoreVertical /></button>
+        <Button variant="soft" size="sm" onClick={finish} disabled={finishing}><Flag size={16} />{t('workout.finish')}</Button>
+        <IconButton label={t('workout.actions')} onClick={() => setSheet('menu')} className="-me-2"><MoreVertical /></IconButton>
       </header>
 
-      <div ref={chipsRef} className="flex gap-1.5 overflow-x-auto no-scrollbar -mx-4 px-4 pb-2 mb-1">
+      <div ref={chipsRef} className="flex gap-1.5 overflow-x-auto no-scrollbar pb-3">
         {workout.slots.map((s, i) => {
-          const n = setsForSlot(workout, s.slotId).filter((x) => !x.isWarmup).length
-          const done = n >= s.prescription.sets, skipped = workout.skips.some((k) => k.slotId === s.slotId), cur = s.slotId === slot.slotId
-          return <Chip key={s.slotId} active={cur} onClick={() => setCurrent(s.slotId)} className={`!px-3 !text-xs ${done ? 'opacity-60' : skipped ? 'opacity-40 line-through' : ''}`}>{i + 1}{done ? ' ✓' : ` · ${EXERCISES[s.exerciseId]?.termEn}`}</Chip>
+          const cnt = setsForSlot(workout, s.slotId).filter((x) => !x.isWarmup).length
+          const done = cnt >= s.prescription.sets, skipped = workout.skips.some((k) => k.slotId === s.slotId), cur = s.slotId === slot.slotId
+          return (
+            <button key={s.slotId} aria-pressed={cur} onClick={() => setCurrent(s.slotId)}
+              className={`h-9 min-w-9 px-3 rounded-full text-[13px] font-semibold inline-flex items-center gap-1.5 whitespace-nowrap transition ${cur ? 'bg-accent text-accent-ink' : done ? 'bg-accent/15 text-accent' : skipped ? 'bg-surface-2 text-faint line-through' : 'bg-surface-2 text-muted'}`}>
+              <span className="num">{i + 1}</span>{done && !cur ? <Check size={14} /> : cur ? <span className="num">{EXERCISES[s.exerciseId]?.termEn}</span> : null}
+            </button>
+          )
         })}
       </div>
 
-      <section className="card p-3 mb-2">
+      <section className="card p-4 mb-3">
         <button className="flex gap-3 w-full text-start" onClick={() => setSheet('form')}>
-          <ExerciseThumb id={ex.id} className="w-20 h-20 rounded-xl shrink-0" />
+          <ExerciseThumb id={ex.id} className="w-[76px] h-[76px] rounded-2xl shrink-0" />
           <div className="flex-1 min-w-0">
-            <div className="text-lg font-bold leading-tight">{n(ex.name)}</div>
-            {n(ex.name) !== ex.termEn && <div className="text-xs text-muted"><bdi dir="ltr">{ex.termEn}</bdi></div>}
-            <div className="text-sm text-muted mt-0.5"><Mixed>{`${t('workout.setOf', { x: Math.min(setIndex + 1, total), y: total })} · ${slot.prescription.repRange[0]}–${slot.prescription.repRange[1]} ${isTimed ? t('common.sec') : 'reps'}`}</Mixed></div>
-            <div className="text-sm mt-0.5">
-              <span className="text-muted">{t('workout.lastTime')}: </span>
-              {lastTime ? <Mixed>{lastTime.map((s) => `${isBw ? '' : fmtKg(s.weight) + '×'}${s.reps}`).join(' · ')}</Mixed> : <span className="text-info">—</span>}
+            <div className="t-h2 leading-tight">{n(ex.name)}</div>
+            {n(ex.name) !== ex.termEn && <div className="t-cap num">{ex.termEn}</div>}
+            <div className="flex flex-wrap gap-1.5 mt-2">
+              <Pill tone="accent">{t('workout.setOf', { x: Math.min(setIndex + 1, total), y: total })}</Pill>
+              <Pill><N>{slot.prescription.repRange[0]}–{slot.prescription.repRange[1]} {isTimed ? t('common.sec') : 'reps'}</N></Pill>
             </div>
-            <div className="text-xs text-muted mt-1 flex items-center gap-1"><BookOpen size={12} />{t('workout.formCheck')}</div>
           </div>
         </button>
+        <div className="mt-3 flex items-center justify-between gap-3 t-small">
+          <span className="text-muted">{t('workout.lastTime')}</span>
+          {lastTime ? <N className="font-medium">{lastTime.map((s) => `${isBw ? '' : fmtKg(s.weight) + '×'}${s.reps}`).join(' · ')}</N> : <span className="text-faint">—</span>}
+        </div>
         {ex.guide.kyphosisCue && (
-          <button onClick={() => setCueOpen(!cueOpen)} aria-expanded={cueOpen} className="mt-2 w-full min-h-11 text-start text-xs rounded-xl bg-info/10 text-info px-2.5 py-2"><span className={cueOpen ? '' : 'line-clamp-1'}>{l(ex.guide.kyphosisCue)}</span></button>
+          <button onClick={() => setCueOpen(!cueOpen)} aria-expanded={cueOpen} className="mt-3 w-full min-h-11 text-start t-small rounded-xl bg-info/10 text-info px-3 py-2 leading-snug"><span className={cueOpen ? '' : 'line-clamp-1'}>{l(ex.guide.kyphosisCue)}</span></button>
         )}
         {logged.length > 0 && (
-          <ul className="mt-2 flex flex-wrap gap-1.5">
+          <ul className="mt-3 flex flex-wrap gap-1.5">
             {logged.map((s) => (
-              <li key={s.id}><button onClick={() => setEditing(s)} className={`min-h-11 min-w-11 px-2.5 rounded-lg text-sm tabular-nums ${s.isWarmup ? 'bg-surface-2 text-muted' : 'bg-accent/15 text-accent'}`}><bdi dir="ltr">{s.isWarmup ? 'W ' : ''}{isBw ? '' : fmtKg(s.weight) + '×'}{s.reps}{isTimed ? 's' : ''}</bdi></button></li>
+              <li key={s.id}><button onClick={() => setEditing(s)} className={`h-10 min-w-11 px-3 rounded-xl text-sm font-semibold num ${s.isWarmup ? 'bg-surface-2 text-muted' : 'bg-accent/15 text-accent'}`}>{s.isWarmup ? 'W ' : ''}{isBw ? '' : fmtKg(s.weight) + '×'}{s.reps}{isTimed ? 's' : ''}</button></li>
             ))}
           </ul>
         )}
+        <button onClick={() => setSheet('form')} className="mt-3 h-9 inline-flex items-center gap-1.5 text-sm font-medium text-accent active:opacity-70"><BookOpen size={16} />{t('workout.formCheck')}</button>
       </section>
 
       <div className="flex-1 min-h-2" />
       <RestTimerBar />
 
       {isSkipped ? (
-        <div className="card p-4 mb-2 text-center"><div className="text-muted mb-2">{t('workout.skipped')}</div><div className="flex gap-2"><Button variant="secondary" className="flex-1" onClick={() => unskip(slot.slotId)}>{t('common.undo')}</Button><Button className="flex-1" onClick={goNext}>{t('workout.nextExercise')}<ChevronRight size={18} className="rtl:flip" /></Button></div></div>
+        <div className="card p-4 mb-2 text-center"><div className="text-muted mb-3">{t('workout.skipped')}</div><div className="flex gap-2"><Button variant="secondary" className="flex-1" onClick={() => unskip(slot.slotId)}>{t('common.undo')}</Button><Button className="flex-1" onClick={goNext}>{t('workout.nextExercise')}<ChevronRight size={18} className="rtl:flip" /></Button></div></div>
       ) : slotDone ? (
         <div className="card p-4 mb-2">
-          <div className="text-center font-semibold text-accent mb-3"><Check className="inline -mt-1 me-1" />{t('workout.allSetsDone')}</div>
-          <div className="flex gap-2"><Button variant="secondary" onClick={() => addExtraSet(slot.slotId)}>{t('workout.addSet')}</Button><Button className="flex-1 h-14 text-lg" onClick={goNext}>{t('workout.nextExercise')}<ChevronRight size={20} className="rtl:flip" /></Button></div>
+          <div className="text-center font-semibold text-accent mb-3 inline-flex items-center gap-1.5 w-full justify-center"><Check size={18} />{t('workout.allSetsDone')}</div>
+          <div className="flex gap-2"><Button variant="secondary" onClick={() => addExtraSet(slot.slotId)}>{t('workout.addSet')}</Button><Button size="lg" className="flex-1" onClick={goNext}>{t('workout.nextExercise')}<ChevronRight size={20} className="rtl:flip" /></Button></div>
         </div>
       ) : (
-        <div className="card p-3 mb-2">
-          <div className="flex gap-2 mb-2">
+        <div className="card p-4 mb-2">
+          <div className="flex gap-3 mb-3">
             {!isBw && <Stepper label={t('workout.weight')} unit={t('common.kg')} value={weight} onChange={setWeight} step={ex.weightStep} big />}
             <Stepper label={isTimed ? t('workout.seconds') : t('workout.reps')} value={reps} onChange={setReps} step={isTimed ? 5 : 1} max={isTimed ? 600 : 100} big />
           </div>
           <div className="flex gap-2">
-            <button onClick={() => setSheet('details')} className={`tap px-3 rounded-2xl text-xs font-medium border flex items-center gap-1.5 ${detailsDefault ? 'bg-surface-2 border-border text-muted' : 'bg-warn/15 border-warn/50 text-warn'}`}>
-              <SlidersHorizontal size={14} /><bdi dir="ltr">RIR {rir}</bdi>{!detailsDefault && <span>· {warm ? t('workout.warmup') : `${formLabel} · ${painLabel}`}</span>}
+            <button onClick={() => setSheet('details')} className={`h-14 px-3.5 rounded-[14px] text-[13px] font-semibold flex items-center gap-1.5 whitespace-nowrap ${detailsDefault ? 'bg-surface-2 text-muted' : 'bg-warn/15 text-warn'}`}>
+              <SlidersHorizontal size={16} /><N>RIR {rir}</N>{!detailsDefault && <span>· {warm ? t('workout.warmup') : `${formLabel} · ${painLabel}`}</span>}
             </button>
-            <Button className="flex-1 h-14 text-lg" onClick={log}><Check size={22} />{warm ? t('workout.warmupSet') : t('workout.logSet')}</Button>
+            <Button size="lg" className="flex-1" onClick={log}><Check size={22} />{warm ? t('workout.warmupSet') : t('workout.logSet')}</Button>
           </div>
         </div>
       )}

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Trophy } from 'lucide-react'
 import { useT } from '@/i18n'
-import { Button, Card, PageHeader, Toggle } from '@/components/ui'
+import { Button, Card, PageHeader, Toggle, Stat } from '@/components/ui'
 import { sessionsRepo } from '@/db/repo/sessions'
 import { EXERCISES } from '@/data/exercises'
 import { PROGRAM } from '@/data/program'
@@ -20,11 +20,10 @@ export default function SummaryPage() {
   useEffect(() => { sessionsRepo.get(id).then((x) => setS(x ?? null)) }, [id])
   if (!s) return <main className="page" />
   const save = async (patch: Partial<WorkoutSession>) => { const next = { ...s, ...patch }; setS(next); await sessionsRepo.put(next) }
-  const Stat = ({ label, value }: { label: string; value: string }) => <div className="card p-3 text-center"><div className="text-xs text-muted">{label}</div><div className="text-xl font-bold tabular-nums">{value}</div></div>
   return (
     <main className="page">
       <PageHeader title={t('workout.summary')} sub={l(PROGRAM[s.dayKind].name)} />
-      <div className="grid grid-cols-3 gap-2 mb-3">
+      <div className="grid grid-cols-3 gap-3 mb-3">
         <Stat label={t('workout.duration')} value={fmtDuration((s.endedAt ?? s.startedAt) - s.startedAt)} />
         <Stat label={`${t('workout.volume')} (${t('common.kg')})`} value={String(s.volumeKg)} />
         <Stat label={t('workout.setsDone')} value={String(s.setCount)} />

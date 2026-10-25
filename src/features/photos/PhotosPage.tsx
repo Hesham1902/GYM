@@ -37,7 +37,7 @@ export default function PhotosPage() {
   const sorted = [...pair].sort((a, b) => a.at - b.at)
   return (
     <main className="page">
-      <PageHeader title={t('photos.title')} back right={<Button className="h-11" onClick={() => setAdding(true)}><Camera size={18} />{t('photos.add')}</Button>} />
+      <PageHeader title={t('photos.title')} back right={<Button size="sm" onClick={() => setAdding(true)}><Camera size={16} />{t('photos.add')}</Button>} />
       <div className="flex gap-2 mb-3">{(['side', 'front', 'back'] as PhotoView[]).map((v) => <Chip key={v} active={view === v} onClick={() => { setView(v); setCompare([]) }}>{t(`photos.${v}`)}</Chip>)}</div>
       {sorted.length === 2 && (
         <Card className="mb-3 p-2">

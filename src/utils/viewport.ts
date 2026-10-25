@@ -1,24 +1,25 @@
 /**
- * iOS 26.5+/27 home-screen apps can get a web view that stops short of the screen bottom
- * (WebKit bug 301994): the system paints that strip itself and the home indicator sits in it.
- * Padding the tab bar for the home indicator on top of that strip doubles the black band,
- * so when the web view is shorter than the screen while still drawing under the status bar,
- * the bottom inset is dropped.
+ * Bottom inset for the tab bar, measured instead of trusted.
+ * iOS reports env(safe-area-inset-bottom) = 34px for the home indicator. Some iOS builds (WebKit bug
+ * 301994) also stop the web view short of the screen bottom, so padding 34px again doubles the band.
+ * We measure the real inset with a probe, subtract whatever the system already reserved
+ * (screen height − viewport height, portrait only) and write the result to --sab.
  */
 export function watchStandaloneViewport() {
-  const nav = navigator as Navigator & { standalone?: boolean }
-  const standalone = window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true
-  if (!standalone || screen.width >= 600) return
   const probe = document.createElement('div')
-  probe.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;padding-top:env(safe-area-inset-top,0px)'
+  probe.style.cssText = 'position:fixed;left:0;bottom:0;width:1px;visibility:hidden;pointer-events:none;height:env(safe-area-inset-bottom,0px)'
   document.body.appendChild(probe)
   const apply = () => {
-    const portrait = window.innerHeight > window.innerWidth
-    const gap = portrait ? Math.max(screen.width, screen.height) - window.innerHeight : 0
-    const sat = parseFloat(getComputedStyle(probe).paddingTop) || 0
-    document.documentElement.classList.toggle('short-viewport', gap > 20 && sat > 0)
+    const inset = probe.getBoundingClientRect().height || 0
+    const portrait = window.innerHeight >= window.innerWidth
+    const nav = navigator as Navigator & { standalone?: boolean }
+    const standalone = window.matchMedia('(display-mode: standalone)').matches || nav.standalone === true
+    const reserved = standalone && portrait ? Math.max(0, Math.max(screen.width, screen.height) - window.innerHeight) : 0
+    const sab = Math.max(0, Math.min(inset, 34) - (reserved > 20 ? reserved : 0))
+    document.documentElement.style.setProperty('--sab', `${Math.round(sab)}px`)
   }
   apply()
   window.addEventListener('resize', apply)
   window.addEventListener('orientationchange', apply)
+  window.visualViewport?.addEventListener('resize', apply)
 }

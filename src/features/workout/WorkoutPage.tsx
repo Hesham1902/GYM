@@ -4,22 +4,22 @@ import { Play, RotateCcw } from 'lucide-react'
 import { useT } from '@/i18n'
 import { useSettings } from '@/stores/settingsStore'
 import { useActive } from '@/stores/activeWorkoutStore'
-import { Button, Card, PageHeader } from '@/components/ui'
-import { Mixed } from '@/components/Mixed'
+import { Button, Card, N, PageHeader, Pill } from '@/components/ui'
 import { PROGRAM, TRAINING_DAYS } from '@/data/program'
 import { EXERCISES } from '@/data/exercises'
-import { buildWorkout, resumeFromSession } from '@/engine/workoutBuilder'
+import { buildWorkout, resumeFromSession, orderedSlots } from '@/engine/workoutBuilder'
 import { todayKind } from '@/engine/schedule'
 import { programWeek, rirForWeek, setsForWeek } from '@/engine/week'
 import { sessionsRepo } from '@/db/repo/sessions'
 import type { DayKind, WorkoutSession } from '@/types'
 import { unlockAudio } from '@/timers/cues'
 import { fmtDate } from '@/utils/date'
+import { exName, exTerm } from '@/utils/names'
 import LiveWorkout from './LiveWorkout'
 
 export default function WorkoutPage({ live }: { live?: boolean }) {
   const nav = useNavigate()
-  const { t, l, n, lang } = useT()
+  const { t, l, lang } = useT()
   const settings = useSettings()
   const workout = useActive((s) => s.workout)
   const start = useActive((s) => s.start)
@@ -45,32 +45,45 @@ export default function WorkoutPage({ live }: { live?: boolean }) {
     setBusy(true); unlockAudio()
     try { start(await resumeFromSession(s, settings)); nav('/workout/live') } finally { setBusy(false) }
   }
-  const DayCard = ({ kind, primary }: { kind: DayKind; primary?: boolean }) => {
-    const day = PROGRAM[kind]
-    return (
-      <Card className={`mb-3 ${primary ? 'border-accent' : ''}`}>
-        <div className="flex items-center justify-between mb-2">
-          <div><div className="text-lg font-bold">{l(day.name)}</div><div className="text-xs text-muted"><Mixed>{`${t('common.week')} ${week} · ${setsForWeek(week, false, true)} ${t(setsForWeek(week, false, true) === 1 ? 'common.set' : 'common.sets')} · RIR ${rirForWeek(week)}`}</Mixed></div></div>
-          <Button onClick={() => begin(kind)} disabled={busy} className={primary ? 'h-12 px-5' : 'h-11'} variant={primary ? 'primary' : 'secondary'}><Play size={18} />{t('common.start')}</Button>
-        </div>
-        <ol className="text-sm text-muted space-y-0.5">
-          {day.slots.map((s, i) => { const ex = EXERCISES[settings.permanentSwaps[s.slotId] ?? s.exerciseId]; return <li key={s.slotId} className="flex gap-2"><span className="w-4 shrink-0">{i + 1}</span><span className="flex-1 min-w-0">{n(ex?.name)}</span><bdi dir="ltr" className="opacity-70 shrink-0 tabular-nums">{s.repRange[0]}–{s.repRange[1]}</bdi></li> })}
-        </ol>
-      </Card>
-    )
-  }
+  const ordered = [today, ...TRAINING_DAYS.filter((k) => k !== today)].filter((k) => TRAINING_DAYS.includes(k))
+
   return (
     <main className="page">
-      <PageHeader title={t('workout.title')} />
+      <PageHeader title={t('nav.workout')} sub={t('workout.pickDaySub')} />
       {unfinished.map((s) => (
-        <Card key={s.id} className="mb-3 border-warn/60 flex items-center justify-between">
-          <div><div className="font-semibold">{t('history.unfinished')}: {l(PROGRAM[s.dayKind].name)}</div><div className="text-xs text-muted"><Mixed>{`${fmtDate(s.dateKey, lang)} · ${s.setCount} ${t(s.setCount === 1 ? 'common.set' : 'common.sets')}`}</Mixed></div></div>
-          <Button variant="secondary" className="h-11" onClick={() => resume(s)}><RotateCcw size={16} />{t('common.resume')}</Button>
+        <Card key={s.id} className="mb-3 card-outline flex items-center gap-3">
+          <div className="flex-1 min-w-0"><div className="font-semibold">{t('history.unfinished')} · {l(PROGRAM[s.dayKind].name)}</div><div className="t-cap">{fmtDate(s.dateKey, lang)} · <N>{s.setCount}</N> {t('common.sets')}</div></div>
+          <Button variant="soft" size="sm" onClick={() => resume(s)}><RotateCcw size={16} />{t('common.resume')}</Button>
         </Card>
       ))}
-      {TRAINING_DAYS.includes(today) && <><h2 className="section">{t('dashboard.todayWorkout')}</h2><DayCard kind={today} primary /></>}
-      <h2 className="section">{t('workout.differentDay')}</h2>
-      {TRAINING_DAYS.filter((k) => k !== today).map((k) => <DayCard key={k} kind={k} />)}
+      {ordered.map((kind) => {
+        const day = PROGRAM[kind]
+        const isToday = kind === today
+        const slots = orderedSlots(kind, settings)
+        return (
+          <section key={kind} className={`card p-4 mb-3 ${isToday ? 'card-outline' : ''}`}>
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2"><h2 className="t-h2">{l(day.name)}</h2>{isToday && <Pill tone="accent">{t('dashboard.today')}</Pill>}</div>
+                <div className="t-cap mt-0.5">{t('workout.exercisesN', { n: slots.length })} · <N>{setsForWeek(week, false, true)} {t('common.sets')} · RIR {rirForWeek(week)}</N></div>
+              </div>
+              <Button variant={isToday ? 'primary' : 'secondary'} size="md" onClick={() => begin(kind)} disabled={busy}><Play size={18} />{t('common.start')}</Button>
+            </div>
+            <ol className="divide-y divide-border">
+              {slots.map((s, i) => {
+                const ex = EXERCISES[settings.permanentSwaps[s.slotId] ?? s.exerciseId]
+                return (
+                  <li key={s.slotId} className="grid grid-cols-[1.25rem_1fr_auto] items-center gap-3 min-h-11 py-1.5">
+                    <span className="t-cap num text-center">{i + 1}</span>
+                    <span className="min-w-0"><span className="t-small leading-snug block truncate">{exName(ex, lang)}</span>{exTerm(ex, lang) && <span className="t-cap block truncate num">{exTerm(ex, lang)}</span>}</span>
+                    <N className="t-cap">{s.repRange[0]}–{s.repRange[1]}</N>
+                  </li>
+                )
+              })}
+            </ol>
+          </section>
+        )
+      })}
     </main>
   )
 }
