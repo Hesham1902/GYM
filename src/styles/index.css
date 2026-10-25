@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-bg: #09090b;
+  --color-surface: #18181b;
+  --color-surface-2: #27272a;
+  --color-border: #3f3f46;
+  --color-text: #fafafa;
+  --color-muted: #a1a1aa;
+  --color-accent: #22c55e;
+  --color-accent-strong: #16a34a;
+  --color-warn: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #38bdf8;
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Noto Sans Arabic", "Helvetica Neue", Arial, sans-serif;
+}
+
+:root {
+  --sat: env(safe-area-inset-top, 0px);
+  --sab: env(safe-area-inset-bottom, 0px);
+  --tabbar-h: 64px;
+  color-scheme: dark;
+}
+
+html, body, #root { height: 100%; }
+html { background: var(--color-bg); overscroll-behavior-y: none; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+input, textarea, select { font-size: 16px !important; user-select: text; -webkit-user-select: text; }
+input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+button { touch-action: manipulation; }
+.app-shell { min-height: 100dvh; min-height: -webkit-fill-available; display: flex; flex-direction: column; }
+.page { padding-top: calc(var(--sat) + 12px); padding-bottom: calc(var(--sab) + var(--tabbar-h) + 16px); padding-inline: 16px; flex: 1; }
+.page-notab { padding-bottom: calc(var(--sab) + 16px); }
+.tabbar { padding-bottom: var(--sab); height: calc(var(--tabbar-h) + var(--sab)); }
+.tap { min-height: 48px; min-width: 48px; }
+.card { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 16px; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+.rtl\:flip:where([dir=rtl] *) { transform: scaleX(-1); }
+.section { font-size: 0.8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--color-muted); margin: 0 0 8px 4px; font-weight: 600; }
