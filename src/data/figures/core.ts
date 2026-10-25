@@ -80,44 +80,52 @@ export const coreFigures: Record<string, Figure> = {
       note: { spine: true, arrow: [{ from: [186, 142], dir: 0, len: 20 }, { from: [44, 158], dir: 180, len: 20 }], muscle: [[123, 164], [90, 166]] },
     },
   },
+  // Side view, cable column standing beside the person (drawn behind, in depth): press the handle straight out from the sternum and hold it there without twisting.
   'pallof-press': {
-    view: 'front',
-    equipment: [{ id: 'floor' }, { id: 'cableMid' }],
-    load: [{ id: 'handle', at: 'both' }],
-    cable: { from: [200, 105], to: 'both' },
+    view: 'side',
+    equipment: [{ id: 'floor' }, { id: 'cableMid', x: -136 }],
+    load: [{ id: 'handle', at: 'wrist', a: 90 }],
+    cable: { from: [64, 105], to: 'wrist', behind: true },
     start: {
       joints: {
-        head: [110, 60], neck: [110, 74], shoulderL: [90, 86], shoulderR: [130, 86], hip: [110, 132],
-        elbowL: [84, 110], wristL: [110, 100], elbowR: [136, 110], wristR: [110, 100],
-        kneeL: [100, 168], ankleL: [98, 204], kneeR: [120, 168], ankleR: [122, 204],
+        head: [112, 56], neck: [112, 70], shoulder: [112, 82], hip: [112, 128],
+        elbow: [114, 108], wrist: [134, 100], elbow2: [112, 108], wrist2: [132, 102],
+        knee: [118, 164], ankle: [114, 200], toe: [130, 206],
+        knee2: [106, 164], ankle2: [102, 200], toe2: [118, 206],
       },
+      note: { spine: true },
     },
     end: {
       joints: {
-        head: [110, 60], neck: [110, 74], shoulderL: [90, 86], shoulderR: [130, 86], hip: [110, 132],
-        elbowL: [96, 102], wristL: [110, 114], elbowR: [124, 102], wristR: [110, 114],
-        kneeL: [100, 168], ankleL: [98, 204], kneeR: [120, 168], ankleR: [122, 204],
+        head: [112, 56], neck: [112, 70], shoulder: [112, 82], hip: [112, 128],
+        elbow: [138, 90], wrist: [164, 96], elbow2: [136, 92], wrist2: [162, 98],
+        knee: [118, 164], ankle: [114, 200], toe: [130, 206],
+        knee2: [106, 164], ankle2: [102, 200], toe2: [118, 206],
       },
-      note: { arrow: [{ from: 'wristR', dir: 90, len: 16 }], muscle: [[128, 114]] },
+      note: { spine: true, arrow: [{ from: 'wrist', dir: 0, len: 20 }], muscle: [[116, 116]] },
     },
   },
+  // Front view of a person on their side (head left, feet right): bottom forearm on the floor under the shoulder, top arm up.
+  // The front renderer places hips and eyes across the neck→hip axis, so a lying torso works.
   'side-plank': {
-    view: 'side', zoom: [0, 90, 240, 150],
+    view: 'front', zoom: [20, 76, 200, 150],
     equipment: [{ id: 'floor' }],
     start: {
+      // hips resting on the floor
       joints: {
-        head: [44, 171], neck: [58, 174], shoulder: [70, 177], hip: [109, 201],
-        elbow: [70, 205], wrist: [96, 206], elbow2: [74, 150], wrist2: [78, 124],
-        knee: [145, 203], ankle: [181, 204], toe: [197, 207], knee2: [145, 203], ankle2: [181, 204], toe2: [197, 207],
+        head: [50, 153], neck: [62, 162], shoulderL: [50, 178], shoulderR: [74, 146], hip: [99, 190],
+        elbowL: [52, 204], wristL: [66, 206], elbowR: [76, 118], wristR: [77, 92],
+        kneeL: [132, 199], ankleL: [170, 202], kneeR: [140, 184], ankleR: [176, 187],
       },
     },
     end: {
+      // hips lifted until head, hips and feet make one straight line
       joints: {
-        head: [44, 171], neck: [58, 174], shoulder: [70, 177], hip: [115, 187],
-        elbow: [70, 205], wrist: [96, 206], elbow2: [74, 150], wrist2: [78, 124],
-        knee: [150, 195], ankle: [185, 204], toe: [200, 208], knee2: [150, 195], ankle2: [185, 204], toe2: [200, 208],
+        head: [50, 154], neck: [64, 158], shoulderL: [58, 177], shoulderR: [70, 139], hip: [108, 171],
+        elbowL: [58, 204], wristL: [72, 206], elbowR: [72, 111], wristR: [73, 85],
+        kneeL: [140, 190], ankleL: [174, 201], kneeR: [145, 173], ankleR: [180, 184],
       },
-      note: { arrow: [{ from: [115, 172], dir: 270, len: 18 }], muscle: [[94, 182]] },
+      note: { arrow: [{ from: [108, 196], dir: 270, len: 20 }], muscle: [[96, 170]] },
     },
   },
 }

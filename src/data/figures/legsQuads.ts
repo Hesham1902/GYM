@@ -5,30 +5,35 @@ import type { Figure } from '../../figure/types.ts'
 export const legsQuadsFigures: Record<string, Figure> = {
   // Leg press: the plate is static, so the feet sit on it at the end (sled pushed away) and hover
   // just short of it at the start. Legs are drawn longer (thigh 64 / shin 56) to reach the sled.
+  // Legs push along the sled line (45° up-right); feet flat on the plate with the toes pointing up the plate.
+  // The plate (legPressSled) is pinned to the ankle, so it travels with the feet.
   'leg-press': {
     view: 'side',
-    equipment: [{ id: 'floor' }, { id: 'legPress' }],
+    equipment: [{ id: 'floor' }, { id: 'legPress' }, { id: 'legPressSled', attach: 'ankle', a: 45 }],
     start: {
+      // knees bent about 90°, thighs toward the chest
       joints: {
         head: [34, 96], neck: [44, 108], shoulder: [50, 116], hip: [74, 152],
         elbow: [66, 142], wrist: [86, 158],
-        knee: [90, 92], ankle: [145, 81], toe: [156, 92],
+        knee: [74, 116], ankle: [109, 117], toe: [98, 106],
       },
       note: { spine: true },
     },
     end: {
+      // legs long with a soft knee, never locked
       joints: {
         head: [34, 96], neck: [44, 108], shoulder: [50, 116], hip: [74, 152],
         elbow: [66, 142], wrist: [86, 158],
-        knee: [106, 96], ankle: [156, 72], toe: [168, 84],
+        knee: [93, 122], ankle: [124, 103], toe: [113, 92],
       },
-      note: { spine: true, arrow: [{ from: [128, 112], dir: 315, len: 22 }], muscle: [[94, 126]] },
+      note: { spine: true, arrow: [{ from: [118, 130], dir: 315, len: 22 }], muscle: [[86, 132]] },
     },
+    // too deep: hips curl off the seat and the lower back rounds
     mistake: {
       joints: {
-        head: [36, 100], neck: [46, 112], shoulder: [52, 120], hip: [84, 144], spine: [60, 142],
+        head: [36, 100], neck: [46, 112], shoulder: [52, 120], hip: [82, 146], spine: [60, 142],
         elbow: [68, 146], wrist: [88, 160],
-        knee: [100, 84], ankle: [153, 67], toe: [164, 78],
+        knee: [74, 112], ankle: [109, 117], toe: [98, 106],
       },
       note: { mistake: { at: 'hip' } },
     },
@@ -57,22 +62,23 @@ export const legsQuadsFigures: Record<string, Figure> = {
   'smith-squat': {
     view: 'side',
     equipment: [{ id: 'floor' }, { id: 'smith' }],
-    load: [{ id: 'barbell', at: 'wrist' }],
+    // bar on the upper back behind the neck, drawn behind the body; hands hold it just outside the shoulders
+    load: [{ id: 'barbell', at: 'wrist', behind: true }],
     start: {
       joints: {
         head: [122, 58], neck: [122, 72], shoulder: [122, 84], hip: [126, 130],
-        elbow: [106, 108], wrist: [118, 86],
+        elbow: [104, 104], wrist: [114, 80],
         knee: [128, 166], ankle: [128, 202], toe: [144, 208],
       },
       note: { spine: true },
     },
     end: {
       joints: {
-        head: [112, 96], neck: [112, 110], shoulder: [112, 122], hip: [106, 168],
-        elbow: [96, 146], wrist: [108, 124],
+        head: [116, 96], neck: [114, 110], shoulder: [112, 122], hip: [104, 167], spine: [106, 144],
+        elbow: [94, 142], wrist: [104, 118],
         knee: [142, 168], ankle: [128, 202], toe: [144, 208],
       },
-      note: { spine: true, arrow: [{ from: [92, 150], dir: 90, len: 22 }], muscle: [[124, 160], [100, 174]] },
+      note: { spine: true, arrow: [{ from: [84, 150], dir: 90, len: 22 }], muscle: [[124, 160], [100, 174]] },
     },
   },
   // Hack squat: sled coordinates. O=(126,190) pad bottom, u=(-0.5,-0.866) up the pad, f=(0.866,-0.5) forward.
@@ -100,6 +106,7 @@ export const legsQuadsFigures: Record<string, Figure> = {
   'leg-extension': {
     view: 'side',
     equipment: [{ id: 'floor' }, { id: 'legExtension' }],
+    lever: [{ pivot: [145, 150], to: 'ankle', end: 'roller', off: [7, -6] }],
     start: {
       joints: {
         head: [100, 74], neck: [101, 88], shoulder: [102, 100], hip: [108, 146],
@@ -241,24 +248,28 @@ export const legsQuadsFigures: Record<string, Figure> = {
     },
   },
   // Leg press calf raise: legs stay nearly straight; the ball of the foot stays on the plate, the heel lifts off it.
+  // Legs straight on the sled line, feet flat on the plate; pointing the feet drives the plate away and lifts the heels off it.
+  // The plate is pinned to the toes (offset back along the plate so the sled stays on its rails).
   'leg-press-calf-raise': {
     view: 'side',
-    equipment: [{ id: 'floor' }, { id: 'legPress' }],
+    equipment: [{ id: 'floor' }, { id: 'legPress' }, { id: 'legPressSled', attach: 'toe', x: 11, y: 11, a: 45 }],
     start: {
+      // feet flat on the plate
       joints: {
         head: [34, 96], neck: [44, 108], shoulder: [50, 116], hip: [74, 152],
         elbow: [66, 142], wrist: [86, 158],
-        knee: [106, 96], ankle: [156, 72], toe: [168, 84],
+        knee: [99, 127], ankle: [124, 102], toe: [113, 91],
       },
       note: { spine: true },
     },
     end: {
+      // pointed: the balls of the feet drive the plate away
       joints: {
         head: [34, 96], neck: [44, 108], shoulder: [50, 116], hip: [74, 152],
         elbow: [66, 142], wrist: [86, 158],
-        knee: [97, 92], ankle: [152, 83], toe: [168, 84],
+        knee: [99, 127], ankle: [124, 102], toe: [118, 87],
       },
-      note: { spine: true, arrow: [{ from: [150, 110], dir: 315, len: 20 }], muscle: [[125, 80]] },
+      note: { spine: true, arrow: [{ from: [132, 74], dir: 315, len: 18 }], muscle: [[116, 118]] },
     },
   },
   // Single-leg calf raise on a box: ball of the foot on the box's left edge (x=120), free foot hooked behind.

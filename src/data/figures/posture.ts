@@ -5,62 +5,63 @@ import type { Figure } from '../../figure/types.ts'
 export const postureFigures: Record<string, Figure> = {
   'chin-tuck': {
     view: 'side',
+    // the move is a few centimetres: crop to the head and shoulders so it reads
+    zoom: [36, 14, 152, 114],
     equipment: [{ id: 'floor' }],
     start: {
-      // forward head: head sits in front of the neck line
+      // forward head: head sits in front of the shoulders, chin poking up
       joints: {
-        head: [115, 61], neck: [104, 70], shoulder: [100, 82], hip: [100, 128],
+        head: [117, 59], neck: [105, 70], shoulder: [100, 82], hip: [100, 128], headTilt: 10,
         elbow: [101, 110], wrist: [103, 136],
         knee: [101, 164], ankle: [100, 200], toe: [116, 206],
       },
     },
     end: {
-      // head glided straight back over the shoulders
+      // head glided straight back over the shoulders, chin slightly tucked (double chin)
       joints: {
-        head: [99, 56], neck: [100, 70], shoulder: [100, 82], hip: [100, 128],
+        head: [100, 56], neck: [100, 70], shoulder: [100, 82], hip: [100, 128], headTilt: -8,
         elbow: [101, 110], wrist: [103, 136],
         knee: [101, 164], ankle: [100, 200], toe: [116, 206],
       },
-      note: { arrow: [{ from: [90, 56], dir: 180, len: 18 }], muscle: [[108, 70]] },
+      note: { arrow: [{ from: [84, 50], dir: 180, len: 18 }], muscle: [[91, 74]] },
     },
     mistake: {
       // nodding the head down instead of gliding it back
       joints: {
-        head: [113, 67], neck: [104, 76], shoulder: [100, 82], hip: [100, 128],
+        head: [112, 64], neck: [104, 75], shoulder: [100, 82], hip: [100, 128], headTilt: -35,
         elbow: [101, 110], wrist: [103, 136],
         knee: [101, 164], ankle: [100, 200], toe: [116, 206],
       },
-      note: { mistake: { at: 'head' } },
+      note: { mistake: { at: [128, 86] } },
     },
   },
+  // Front view, back flat on the wall: goal-post arms slide up the wall to a V and back.
   'wall-angel': {
-    view: 'side',
-    equipment: [{ id: 'floor' }, { id: 'wall' }],
+    view: 'front',
+    equipment: [{ id: 'floor' }, { id: 'wallBack' }],
     start: {
-      // back, head and elbows on the wall; elbows at shoulder height, forearms up along the wall (upper arm points at the viewer)
       joints: {
-        head: [84, 56], neck: [82, 70], shoulder: [82, 82], hip: [82, 128],
-        elbow: [80, 94], wrist: [79, 68],
-        knee: [92, 163], ankle: [98, 200], toe: [114, 206],
+        head: [120, 54], neck: [120, 68], shoulderL: [100, 80], shoulderR: [140, 80], hip: [120, 126],
+        elbowL: [72, 82], wristL: [71, 56], elbowR: [168, 82], wristR: [169, 56],
+        kneeL: [111, 162], ankleL: [109, 200], kneeR: [129, 162], ankleR: [131, 200],
       },
     },
     end: {
-      // arms slid up overhead, still on the wall
       joints: {
-        head: [84, 56], neck: [82, 70], shoulder: [82, 82], hip: [82, 128],
-        elbow: [80, 56], wrist: [79, 30],
-        knee: [92, 163], ankle: [98, 200], toe: [114, 206],
+        head: [120, 54], neck: [120, 68], shoulderL: [100, 80], shoulderR: [140, 80], hip: [120, 126],
+        elbowL: [86, 56], wristL: [78, 31], elbowR: [154, 56], wristR: [162, 31],
+        kneeL: [111, 162], ankleL: [109, 200], kneeR: [129, 162], ankleR: [131, 200],
       },
-      note: { arrow: [{ from: 'wrist', dir: 270, len: 18 }], muscle: [[86, 100]] },
+      note: { arrow: [{ from: 'wristL', dir: 260, len: 16 }, { from: 'wristR', dir: 280, len: 16 }], muscle: [[120, 96]] },
     },
+    // shrugging: shoulders creep up to the ears as the arms go up
     mistake: {
-      // lower back arching off the wall
       joints: {
-        head: [84, 56], neck: [82, 70], shoulder: [82, 82], hip: [82, 128], spine: [98, 104],
-        elbow: [80, 56], wrist: [79, 30],
-        knee: [92, 163], ankle: [98, 200], toe: [114, 206],
+        head: [120, 54], neck: [120, 68], shoulderL: [101, 71], shoulderR: [139, 71], hip: [120, 126],
+        elbowL: [88, 47], wristL: [80, 22], elbowR: [152, 47], wristR: [160, 22],
+        kneeL: [111, 162], ankleL: [109, 200], kneeR: [129, 162], ankleR: [131, 200],
       },
-      note: { mistake: { at: [92, 112] } },
+      note: { mistake: { at: 'shoulderR' } },
     },
   },
   'doorway-pec-stretch': {
@@ -121,13 +122,13 @@ export const postureFigures: Record<string, Figure> = {
       },
     },
     end: {
-      // upper back extended over the chair edge, eyes toward the ceiling
+      // upper back extends over the chair-back edge (a moderate arc, not a back bend), eyes toward the ceiling
       joints: {
-        head: [61, 126], neck: [72, 117], shoulder: [82, 110], hip: [100, 150], spine: [98, 98],
-        elbow: [56, 100], wrist: [50, 125],
+        head: [68, 90], neck: [79, 98], shoulder: [88, 106], hip: [100, 150], spine: [99, 120], headTilt: 15,
+        elbow: [82, 78], wrist: [58, 88],
         knee: [136, 150], ankle: [136, 198], toe: [152, 206],
       },
-      note: { arrow: [{ from: 'head', dir: 180, len: 18 }], muscle: [[94, 110]] },
+      note: { arrow: [{ from: [70, 62], dir: 200, len: 20, curve: -6 }], muscle: [[94, 112]] },
     },
   },
   'cat-cow': {
@@ -299,7 +300,7 @@ export const postureFigures: Record<string, Figure> = {
       joints: {
         head: [150, 111], neck: [136, 115], shoulder: [124, 118], hip: [80, 130],
         elbow: [144, 100], wrist: [164, 82],
-        elbow2: [122, 146], wrist2: [120, 172],
+        elbow2: [142, 103], wrist2: [162, 86],
         knee: [92, 165], ankle: [96, 200], toe: [112, 206],
       },
       note: { spine: true, arrow: [{ from: 'hip', dir: 180, len: 20 }], muscle: [[110, 128]] },

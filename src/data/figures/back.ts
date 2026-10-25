@@ -33,9 +33,10 @@ export const backFigures: Record<string, Figure> = {
       note: { spine: true, mistake: { at: 'neck' } },
     },
   },
+  // Kneeling on the assist pad, which rises with the knees. Chin ends just above the bar, face behind it.
   'assisted-pull-up': {
     view: 'side',
-    equipment: [{ id: 'floor' }, { id: 'assistedPullup' }],
+    equipment: [{ id: 'floor' }, { id: 'assistedPullup' }, { id: 'kneePad', attach: 'knee', x: -14, y: 6 }],
     start: {
       joints: {
         head: [110, 58], neck: [110, 72], shoulder: [110, 84], hip: [106, 130],
@@ -46,11 +47,11 @@ export const backFigures: Record<string, Figure> = {
     },
     end: {
       joints: {
-        head: [122, 44], neck: [122, 58], shoulder: [122, 70], hip: [124, 116],
-        elbow: [101, 54], wrist: [114, 30],
-        knee: [136, 148], ankle: [100, 150], toe: [94, 165],
+        head: [98, 34], neck: [100, 48], shoulder: [100, 60], hip: [102, 106],
+        elbow: [126, 53], wrist: [114, 30],
+        knee: [132, 124], ankle: [96, 126], toe: [90, 141],
       },
-      note: { spine: true, arrow: [{ from: [142, 120], dir: 270, len: 24 }], muscle: [[112, 82]] },
+      note: { spine: true, arrow: [{ from: [80, 96], dir: 270, len: 24 }], muscle: [[94, 76]] },
     },
   },
   'single-arm-cable-pulldown': {
@@ -225,75 +226,79 @@ export const backFigures: Record<string, Figure> = {
       note: { spine: true, arrow: [{ from: [178, 152], dir: 285, len: 24 }], muscle: [[118, 138]] },
     },
   },
+  // Front view (person faces the viewer, chest on the pad in front): handles start together in front of the chest and sweep out to a T.
   'rear-delt-fly-machine': {
-    view: 'side',
-    equipment: [{ id: 'floor' }, { id: 'rearDeltMachine' }],
-    load: [{ id: 'handle', at: 'wrist' }],
+    view: 'front',
+    equipment: [{ id: 'floor' }, { id: 'rearDeltFront' }],
+    load: [{ id: 'handle', at: 'wristL', a: 90 }, { id: 'handle', at: 'wristR', a: 90 }],
     start: {
       joints: {
-        head: [116, 76], neck: [116, 90], shoulder: [116, 102], hip: [112, 148], spine: [111, 125],
-        elbow: [140, 116], wrist: [164, 106],
-        knee: [148, 150], ankle: [150, 198], toe: [166, 206],
+        head: [120, 78], neck: [120, 92], shoulderL: [100, 104], shoulderR: [140, 104], hip: [120, 146],
+        elbowL: [102, 114], wristL: [113, 106], elbowR: [138, 114], wristR: [127, 106],
+        kneeL: [108, 160], ankleL: [106, 204], kneeR: [132, 160], ankleR: [134, 204],
       },
-      note: { spine: true },
     },
     end: {
       joints: {
-        head: [116, 76], neck: [116, 90], shoulder: [116, 102], hip: [112, 148], spine: [111, 125],
-        elbow: [90, 112], wrist: [65, 120],
-        knee: [148, 150], ankle: [150, 198], toe: [166, 206],
+        head: [120, 78], neck: [120, 92], shoulderL: [100, 104], shoulderR: [140, 104], hip: [120, 146],
+        elbowL: [73, 106], wristL: [47, 108], elbowR: [167, 106], wristR: [193, 108],
+        kneeL: [108, 160], ankleL: [106, 204], kneeR: [132, 160], ankleR: [134, 204],
       },
-      note: { spine: true, arrow: [{ from: [96, 98], dir: 180, len: 26 }], muscle: [[104, 104]] },
+      note: { arrow: [{ from: 'wristL', dir: 180, len: 18 }, { from: 'wristR', dir: 0, len: 18 }], muscle: [[100, 104], [140, 104]] },
     },
+    // shrugging: shoulders pulled up to the ears, traps take over
     mistake: {
       joints: {
-        head: [116, 81], neck: [116, 95], shoulder: [116, 102], hip: [112, 148], spine: [111, 125],
-        elbow: [92, 104], wrist: [67, 110],
-        knee: [148, 150], ankle: [150, 198], toe: [166, 206],
+        head: [120, 76], neck: [120, 92], shoulderL: [101, 94], shoulderR: [139, 94], hip: [120, 146],
+        elbowL: [74, 98], wristL: [48, 96], elbowR: [166, 98], wristR: [192, 96],
+        kneeL: [108, 160], ankleL: [106, 204], kneeR: [132, 160], ankleR: [134, 204],
       },
-      note: { spine: true, mistake: { at: 'shoulder' } },
+      note: { mistake: { at: 'shoulderR' } },
     },
   },
+  // Front view, seated on the end of a bench and folded over the thighs (head low, in front of the chest).
+  // Dumbbells hang beside the shins, then sweep out to the sides with soft elbows.
   'bent-over-db-rear-fly': {
-    view: 'side',
-    equipment: [{ id: 'floor' }, { id: 'box' }],
-    load: [{ id: 'dumbbell', at: 'wrist' }],
+    view: 'front',
+    equipment: [{ id: 'floor' }, { id: 'benchEnd' }],
+    load: [{ id: 'dumbbell', at: 'wristL', a: 90 }, { id: 'dumbbell', at: 'wristR', a: 90 }],
     start: {
       joints: {
-        head: [206, 138], neck: [193, 143], shoulder: [182, 147], hip: [140, 166], spine: [160, 154],
-        elbow: [181, 175], wrist: [174, 200],
-        knee: [176, 170], ankle: [178, 204], toe: [194, 206],
+        head: [120, 128], neck: [120, 122], shoulderL: [100, 124], shoulderR: [140, 124], hip: [120, 148],
+        elbowL: [95, 151], wristL: [97, 177], elbowR: [145, 151], wristR: [143, 177],
+        kneeL: [106, 162], ankleL: [104, 204], kneeR: [134, 162], ankleR: [136, 204],
       },
-      note: { spine: true },
     },
     end: {
       joints: {
-        head: [206, 138], neck: [193, 143], shoulder: [182, 147], hip: [140, 166], spine: [160, 154],
-        elbow: [160, 128], wrist: [136, 118],
-        knee: [176, 170], ankle: [178, 204], toe: [194, 206],
+        head: [120, 128], neck: [120, 122], shoulderL: [100, 124], shoulderR: [140, 124], hip: [120, 148],
+        elbowL: [73, 120], wristL: [48, 126], elbowR: [167, 120], wristR: [192, 126],
+        kneeL: [106, 162], ankleL: [104, 204], kneeR: [134, 162], ankleR: [136, 204],
       },
-      note: { spine: true, arrow: [{ from: [118, 150], dir: 270, len: 22 }], muscle: [[174, 138]] },
+      note: { arrow: [{ from: 'wristL', dir: 200, len: 18 }, { from: 'wristR', dir: 340, len: 18 }], muscle: [[100, 122], [140, 122]] },
     },
   },
+  // Front view, one arm: the far hand takes the cable from the column on the other side and sweeps it across
+  // the chest out to the side at shoulder height (arm long, soft elbow).
   'reverse-cable-fly': {
-    view: 'side',
+    view: 'front',
     equipment: [{ id: 'floor' }, { id: 'cableFace' }],
-    cable: { from: [200, 80], to: 'wrist' },
+    load: [{ id: 'handle', at: 'wristL', a: 90 }],
+    cable: { from: [200, 80], to: 'wristL' },
     start: {
       joints: {
-        head: [100, 56], neck: [100, 70], shoulder: [100, 82], hip: [100, 128], spine: [97, 105],
-        elbow: [127, 80], wrist: [152, 70],
-        knee: [101, 163], ankle: [100, 198], toe: [116, 206],
+        head: [120, 54], neck: [120, 68], shoulderL: [100, 80], shoulderR: [140, 80], hip: [120, 126],
+        elbowL: [124, 91], wristL: [150, 88], elbowR: [144, 108], wristR: [146, 134],
+        kneeL: [112, 162], ankleL: [110, 198], kneeR: [128, 162], ankleR: [130, 198],
       },
-      note: { spine: true },
     },
     end: {
       joints: {
-        head: [100, 56], neck: [100, 70], shoulder: [100, 82], hip: [100, 128], spine: [97, 105],
-        elbow: [74, 92], wrist: [49, 98],
-        knee: [101, 163], ankle: [100, 198], toe: [116, 206],
+        head: [120, 54], neck: [120, 68], shoulderL: [100, 80], shoulderR: [140, 80], hip: [120, 126],
+        elbowL: [72, 82], wristL: [46, 84], elbowR: [144, 108], wristR: [146, 134],
+        kneeL: [112, 162], ankleL: [110, 198], kneeR: [128, 162], ankleR: [130, 198],
       },
-      note: { spine: true, arrow: [{ from: [70, 80], dir: 180, len: 20 }], muscle: [[90, 88]] },
+      note: { arrow: [{ from: 'wristL', dir: 180, len: 18 }], muscle: ['shoulderL'] },
     },
   },
 }
