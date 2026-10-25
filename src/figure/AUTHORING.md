@@ -9,8 +9,10 @@ Then open the PNG with the Read tool. Iterate until every figure passes the chec
 
 ## Coordinate space
 - 240 × 240, origin top-left, y grows downward. Floor line is y = 210 (always include `{ id: 'floor' }` for standing/seated/floor exercises).
-- Side view: the person faces **+x (right)**. For a lying person "facing up", set `face: 'up'` and lay the body along x (head left, feet right). `face: 'down'` for prone (chest-down). Use `flip: true` on the figure if the whole scene must mirror.
+- Side view: the person faces **+x (right)**. For a lying person set `face: 'up'` (nose points to the top of the picture) and lay the body along x (head left, feet right). `face: 'down'` for prone (chest-down). Use `flip: true` on the figure if the whole scene must mirror.
 - Front/back view (`view: 'front'`): `FrontJoints` with L/R sides; `back: true` on the joints to show the back of the body (spine dashed, no eyes).
+
+Floor exercises: add `zoom: [0, 90, 240, 150]` (x y w h) on the figure so the lying body fills the frame.
 
 ## Body proportions (keep lengths consistent in start/end/mistake, ±3)
 | Segment | Length |
@@ -50,22 +52,22 @@ Contact points below are what you place joints against. `x/y` translate, `s` sca
 - **rowStation**: seated cable row: seat top y=150 x 70..110 (person sits facing +x), foot plate at x=150 (angled), low pulley at (200,130)
 - **chestSupportRow**: chest-supported row: incline chest pad from (110,150) rising to (80,96) (person lies chest-down on it facing +x, head near (76,92)); seat/foot step at y=170 x 120..160; handles hang below pad at (118,150) start → (104,118) end
 - **rearDeltMachine**: rear delt (reverse pec deck): seat top y=150 x 88..132; chest pad x 128..138 y 92..150 (person faces +x, chest on pad); handle arms pivot at (150,70), handles start in front at (160,105) → end out to the side (hidden)
-- **legPress**: 45° leg press sled: seat pad from (50,165) rising slightly to the right (hips sit at ≈(72,150)); back pad from (50,165) up-left to ≈(14,112) (person leans back on it, head near (18,100), faces up-right); foot plate perpendicular to the legs from (150,60) down-right to (214,124) (feet flat on it, start: knees bent ≈90°, end: legs nearly straight toward up-right); rails run parallel to the legs behind the plate
+- **legPress**: 45° leg press sled: seat pad from (50,165) rising slightly to the right (hips sit at ≈(74,152)); back pad from (64,160) up-left to ≈(24,100) at 56° (person leans back on it: shoulder ≈(50,116), head ≈(34,96)); foot plate perpendicular to the legs from (150,60) down-right to (214,124) (feet flat on it, start: knees bent ≈90°, end: legs nearly straight toward up-right); rails run parallel to the legs behind the plate
 - **legExtension**: leg extension: seat top y=150 x 86..130 (person sits facing +x), back pad x 82..92 y 95..150; shin pad start hanging below knee at (140,195) → end extended at (184,150)
 - **legCurlSeated**: seated leg curl: seat top y=150 x 86..130, back pad x 82..92 y 95..150; thigh lock pad at (118,124); ankle pad start extended at (184,150) → end curled under at (130,190)
 - **legCurlLying**: lying leg curl: bench top y=150 x 40..200, person lies face-down with head at left (x≈60), hips x≈130; ankle pad start at (195,150) → end curled up at (150,100)
-- **hackSquat**: hack squat: back pad angled 60° from (130,190) up-left to (80,100) (person leans back on it, faces +x), shoulder pads at top; foot plate from (150,200) to (210,165) (angled 30°); standing start (hips at ≈(118,120)) → squat end (hips lower-left ≈(100,150))
-- **calfStanding**: standing calf machine: shoulder pads at y≈75 (x 100..140), step/block top y=200 x 100..150 (balls of feet on its edge at x≈150); frame post at x=70
-- **calfSeated**: seated calf raise: seat top y=150 x 70..110; knee pad at (120,122) on thighs; foot block top y=200 x 120..150
+- **hackSquat**: hack squat: back pad angled 60° from (126,190) up-left to (74,100) (person leans back on it, faces +x; back 9px in front of that line); foot plate from (150,200) up-right to (210,165) (angled 30°, perpendicular to the pad; feet rest 4px above that line); standing start (hips ≈(109,142), feet ≈(162,188)) → squat end (body slides down the pad, hips ≈(124,168))
+- **calfStanding**: standing calf machine: shoulder pads at y≈75 (x 100..140), step/block top y=200 x 136..186 (balls of the feet on its left edge at x≈136, toes on the block, heels hang free behind it; body centred under the pads at x≈125); frame post at x=70
+- **calfSeated**: seated calf raise: seat top y=174 x 70..110 (hips ≈(90,168)); knee pad y 149..157 x 110..140 on the lower thighs (knees ≈(126,160)); foot block top y=200 x 140..172 (balls of the feet on its left edge x≈140, heels hang free)
 - **smith**: Smith machine: two vertical rails at x=96 and x=144 (bar slides between), bar height set by the pose
 - **pullupBar**: pull-up bar at y=30 from x 80..160 (hands grip at y=30)
 - **assistedPullup**: assisted pull-up: bar at y=30 x 80..160; knee pad at y=150 x 100..140 (person kneels on it); stack at x=206
 - **backExtension**: 45° back extension: hip pad top at (120,130) angled 45° (hips rest on it, person faces +x, feet lower-left locked at (70,185))
 - **foamRoller**: foam roller on the floor, center (130,196) r=14 (lies under the upper back)
 
-## Loads (`load: [{ id, at: 'wrist' | 'wrist2' | 'both', a? }]`)
+## Loads (`load: [{ id, at: 'wrist' | 'wrist2' | 'wristL' | 'wristR' | 'both', a? }]`)
 `dumbbell` (a = rotation; 0 = horizontal bar, 90 = vertical), `barbell` / `ezBar` / `plate` (drawn as a plate circle in side view), `handle` (D-handle), `ropeHandle`, `kettle`, `band` (line between the two hands; use `at: 'both'`).
-Cables: `cable: { from: [x,y] of the pulley, to: 'wrist' | 'both' }` draws the cable from the pulley to the hand.
+Cables: `cable: { from: [x,y] of the pulley, to: 'wrist' | 'wristL' | 'wristR' | 'both' }` draws the cable from the pulley to the hand (`wristL`/`wristR` for one hand in a front view).
 
 ## Annotations (`note` on a frame)
 - **End frame always has** `arrow` on the limb that moved (`from` a joint name or point, `dir` degrees: 0 = right, 90 = down, 180 = left, 270 = up, `len` 18–30) and `muscle` glow(s) on the working muscle (a joint name or an explicit point, e.g. chest = a point a little in front of the shoulder, lats = a point below/behind the shoulder, glutes = behind the hip, quads = mid thigh, hamstrings = behind mid thigh, calves = behind the shin, biceps = mid upper arm front, triceps = mid upper arm back, rear delts = behind the shoulder, upper back = between neck and mid torso).

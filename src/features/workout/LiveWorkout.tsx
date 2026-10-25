@@ -134,7 +134,8 @@ export default function LiveWorkout() {
         <button className="flex gap-3 w-full text-start" onClick={() => setSheet('form')}>
           <ExerciseThumb id={ex.id} className="w-20 h-20 rounded-xl shrink-0" />
           <div className="flex-1 min-w-0">
-            <div className="text-lg font-bold leading-tight">{l(ex.name)}</div>
+            <div className="text-lg font-bold leading-tight"><bdi>{l(ex.name).replace(/\s*\(.*\)\s*$/, '')}</bdi></div>
+            {l(ex.name) !== ex.termEn && <div className="text-xs text-muted"><bdi dir="ltr">{ex.termEn}</bdi></div>}
             <div className="text-sm text-muted mt-0.5"><Mixed>{`${t('workout.setOf', { x: Math.min(setIndex + 1, total), y: total })} · ${slot.prescription.repRange[0]}–${slot.prescription.repRange[1]} ${isTimed ? t('common.sec') : 'reps'}`}</Mixed></div>
             <div className="text-sm mt-0.5">
               <span className="text-muted">{t('workout.lastTime')}: </span>
@@ -155,7 +156,7 @@ export default function LiveWorkout() {
         )}
       </section>
 
-      <div className="flex-1" />
+      <div className="flex-1 min-h-2" />
       <RestTimerBar />
 
       {isSkipped ? (

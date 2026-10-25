@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Figure } from './types'
-import { lerpJoints, renderInner, VIEW } from './render'
+import { lerpJoints, renderInner, viewBoxOf } from './render'
 
 export type FigureFrame = 'start' | 'end' | 'mistake' | null
 
@@ -30,5 +30,5 @@ export function FigureView({ figure, frame = null, className = '' }: { figure: F
     const j = lerpJoints(figure.start.joints, figure.end.joints, t)
     return renderInner(figure, j, t > 0.5 ? figure.end.note : figure.start.note)
   }, [figure, frame, t])
-  return <svg viewBox={`0 0 ${VIEW} ${VIEW}`} className={className} role="img" aria-hidden="true" dangerouslySetInnerHTML={{ __html: html }} />
+  return <svg viewBox={viewBoxOf(figure)} className={className} role="img" aria-hidden="true" dangerouslySetInnerHTML={{ __html: html }} />
 }

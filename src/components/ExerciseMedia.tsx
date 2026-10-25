@@ -28,7 +28,7 @@ export function ExerciseMedia({ id, compact = false }: { id: string; compact?: b
   return (
     <div>
       {showFig ? (
-        <div className={`${compact ? 'h-48' : 'aspect-square max-h-80'} mx-auto rounded-2xl bg-bg overflow-hidden`}><FigureView figure={fig} frame={frame} className="w-full h-full" /></div>
+        <div className={`${compact ? 'max-h-56' : 'max-h-80'} mx-auto rounded-2xl bg-bg overflow-hidden`} style={{ aspectRatio: fig.zoom ? `${fig.zoom[2]} / ${fig.zoom[3]}` : '1 / 1' }}><FigureView figure={fig} frame={frame} className="w-full h-full" /></div>
       ) : (
         <div className="grid grid-cols-2 gap-2">
           {[0, 1].map((i) => (

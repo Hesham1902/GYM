@@ -28,22 +28,22 @@ function sideBody(j: SideJoints): string {
   const up = unit(j.hip, j.neck)
   let face: Pt
   switch (j.face) {
-    case 'up': face = [-up[1] * -1, up[0] * -1]; face = [up[0], up[1]]; break
-    case 'down': face = [-up[0], -up[1]]; break
+    case 'up': face = [0, -1]; break      // nose toward the top of the picture (supine)
+    case 'down': face = [0, 1]; break     // nose toward the floor (prone)
     case 'back': face = [up[1], -up[0]]; break
     default: face = [-up[1], up[0]] // perpendicular to spine, toward +x when standing upright
   }
   const spineD = torsoPath(j.shoulder, j.hip, j.spine)
   return back + backLeg +
     seg(j.hip, j.knee, W.thigh, C.body) + seg(j.knee, j.ankle, W.shin, C.body) + seg(j.ankle, j.toe, W.foot, C.body) +
-    strokePath(spineD, W.torso, C.body) + seg(j.shoulder, j.neck, W.neck, C.body) +
+    strokePath(spineD, W.torso, C.torso) + seg(j.shoulder, j.neck, W.neck, C.torso) +
     head(j.head, face) +
     seg(j.shoulder, j.elbow, W.ua, C.body) + seg(j.elbow, j.wrist, W.fa, C.body) + circle(j.wrist, 4.5, C.body)
 }
 
 function frontBody(j: FrontJoints): string {
   const hipL: Pt = [j.hip[0] - 9, j.hip[1]], hipR: Pt = [j.hip[0] + 9, j.hip[1]]
-  const torso = `<path d="M${j.shoulderL[0]} ${j.shoulderL[1]} L${j.shoulderR[0]} ${j.shoulderR[1]} L${hipR[0]} ${hipR[1]} L${hipL[0]} ${hipL[1]} Z" fill="${C.body}" stroke="${C.outline}" stroke-width="3" stroke-linejoin="round"/>`
+  const torso = `<path d="M${j.shoulderL[0]} ${j.shoulderL[1]} L${j.shoulderR[0]} ${j.shoulderR[1]} L${hipR[0]} ${hipR[1]} L${hipL[0]} ${hipL[1]} Z" fill="${C.torso}" stroke="${C.outline}" stroke-width="3" stroke-linejoin="round"/>`
   const spine = j.back ? `<line x1="${j.neck[0]}" y1="${j.neck[1]}" x2="${j.hip[0]}" y2="${j.hip[1]}" stroke="${C.bodyBack}" stroke-width="2" stroke-dasharray="3 3"/>` : ''
   const faceDot = j.back ? '' : `<circle cx="${j.head[0] - 4}" cy="${j.head[1] - 2}" r="1.6" fill="${C.outline}"/><circle cx="${j.head[0] + 4}" cy="${j.head[1] - 2}" r="1.6" fill="${C.outline}"/>`
   return seg(hipL, j.kneeL, W.thigh, C.body) + seg(j.kneeL, j.ankleL, W.shin, C.body) + seg(hipR, j.kneeR, W.thigh, C.body) + seg(j.kneeR, j.ankleR, W.shin, C.body) +
@@ -103,8 +103,13 @@ export function renderInner(fig: Figure, joints: Joints, note?: Annotation): str
   return `<g ${flip}>${eq}${cable}${body}${loads}${annotations(joints, note)}</g>`
 }
 
+export function viewBoxOf(fig: Figure): string {
+  return fig.zoom ? fig.zoom.join(' ') : `0 0 ${VIEW} ${VIEW}`
+}
+
 export function renderSvg(fig: Figure, joints: Joints, note?: Annotation, bg = '#18181b'): string {
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${VIEW} ${VIEW}" width="${VIEW}" height="${VIEW}"><rect width="${VIEW}" height="${VIEW}" fill="${bg}"/>${renderInner(fig, joints, note)}</svg>`
+  const [x, y, w, h] = fig.zoom ?? [0, 0, VIEW, VIEW]
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${x} ${y} ${w} ${h}" width="${VIEW}" height="${VIEW}" preserveAspectRatio="xMidYMid meet"><rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${bg}"/>${renderInner(fig, joints, note)}</svg>`
 }
 
 export function lerpJoints(a: Joints, b: Joints, t: number): Joints {
