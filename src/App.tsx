@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { TabBar } from '@/components/TabBar'
 import { Toasts } from '@/components/Toast'
+import { ConfirmHost } from '@/components/Confirm'
 import { useApplyLocale } from '@/i18n'
 import { useUi } from '@/stores/uiStore'
 import DashboardPage from '@/features/dashboard/DashboardPage'
@@ -54,6 +55,7 @@ export default function App() {
       </Routes>
       {!hideTab && <TabBar />}
       <Toasts />
+      <ConfirmHost />
     </div>
   )
 }

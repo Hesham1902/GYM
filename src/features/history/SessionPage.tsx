@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Trash2, RotateCcw } from 'lucide-react'
 import { useT } from '@/i18n'
+import { confirmSheet } from '@/components/Confirm'
 import { useSettings } from '@/stores/settingsStore'
 import { useActive } from '@/stores/activeWorkoutStore'
 import { useUi } from '@/stores/uiStore'
@@ -33,8 +34,8 @@ export default function SessionPage() {
     const fixed = { ...next, volumeKg: totalVolume(working), setCount: working.length }
     setS(fixed); await sessionsRepo.saveWithSets(fixed); toast(t('toast.saved'), 'success')
   }
-  const del = async () => { if (!confirm(t('common.confirmDelete'))) return; await sessionsRepo.delete(s.id); nav(-1) }
-  const resume = async () => { if (active && !confirm(t('workout.discardConfirm'))) return; startActive(await resumeFromSession(s, settings)); nav('/workout/live') }
+  const del = async () => { if (!(await confirmSheet(t('history.deleteSession'), { body: t('common.confirmDelete'), danger: true, okLabel: t('common.delete') }))) return; await sessionsRepo.delete(s.id); nav(-1) }
+  const resume = async () => { if (active && !(await confirmSheet(t('history.resume'), { body: t('workout.discardConfirm'), danger: true }))) return; startActive(await resumeFromSession(s, settings)); nav('/workout/live') }
   const bySlot = new Map<string, LoggedSet[]>()
   for (const x of s.sets) bySlot.set(x.slotId, [...(bySlot.get(x.slotId) ?? []), x])
   const ex = editing ? EXERCISES[editing.exerciseId] : null

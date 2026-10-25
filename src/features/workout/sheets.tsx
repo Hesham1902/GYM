@@ -5,8 +5,9 @@ import { useActive } from '@/stores/activeWorkoutStore'
 import { useUi } from '@/stores/uiStore'
 import { BottomSheet } from '@/components/BottomSheet'
 import { Button, Chip } from '@/components/ui'
-import { ExerciseFigure } from '@/components/ExerciseFigure'
-import { GuideBody } from '@/features/library/ExercisePage'
+import { ExerciseMedia, ExerciseThumb } from '@/components/ExerciseMedia'
+import { Mixed } from '@/components/Mixed'
+import { GuideBody } from '@/features/library/GuideBody'
 import { EXERCISES } from '@/data/exercises'
 import { warmupSets } from '@/engine/warmup'
 import { buildSlot } from '@/engine/workoutBuilder'
@@ -19,10 +20,7 @@ export function FormSheet({ slot, onClose }: { slot: ActiveSlot | null; onClose:
   const ex = slot ? EXERCISES[slot.exerciseId] : null
   return (
     <BottomSheet open={!!slot} onClose={onClose} title={ex ? l(ex.name) : ''} tall>
-      {ex && <>
-        <div className="h-44 mx-auto"><ExerciseFigure poseId={ex.poseId} className="h-full w-full" /></div>
-        <GuideBody exerciseId={ex.id} />
-      </>}
+      {ex && <><div className="mb-3"><ExerciseMedia id={ex.id} compact /></div><GuideBody exerciseId={ex.id} /></>}
     </BottomSheet>
   )
 }
@@ -33,9 +31,9 @@ export function WarmupSheet({ slot, weight, onClose }: { slot: ActiveSlot | null
   const rows = ex ? warmupSets(weight, ex.weightStep) : []
   return (
     <BottomSheet open={!!slot} onClose={onClose} title={t('workout.warmupTitle')}>
-      <p className="text-sm text-muted mb-3">{t('workout.warmupHint', { w: fmtKg(weight) })}</p>
+      <p className="text-sm text-muted mb-3"><Mixed>{t('workout.warmupHint', { w: fmtKg(weight) })}</Mixed></p>
       {weight < 20 || !rows.length ? <p className="text-[15px]">{t('workout.warmupNone')}</p> : (
-        <ol className="space-y-2">{rows.map((r, i) => <li key={i} className="card p-3 flex justify-between text-[15px]"><span>{t('workout.warmupRow', { pct: r.pct, reps: r.reps, w: fmtKg(r.weight) })}</span></li>)}</ol>
+        <ol className="space-y-2">{rows.map((r, i) => <li key={i} className="card p-3 text-[15px]"><Mixed>{t('workout.warmupRow', { pct: r.pct, reps: r.reps, w: fmtKg(r.weight) })}</Mixed></li>)}</ol>
       )}
       <Button className="w-full mt-4" onClick={onClose}>{t('common.ok')}</Button>
     </BottomSheet>
@@ -74,10 +72,9 @@ export function SwapSheet({ slot, onClose }: { slot: ActiveSlot | null; onClose:
       <div className="flex flex-col gap-2">
         {options.map((a) => { const alt = EXERCISES[a.exerciseId]; if (!alt) return null; return (
           <button key={a.exerciseId} disabled={busy} onClick={() => choose(a.exerciseId)} className="card p-3 text-start active:bg-surface-2">
-            <div className="flex items-center gap-3"><div className="w-14 h-14 rounded-xl bg-bg shrink-0"><ExerciseFigure poseId={alt.poseId} animate={false} frame="end" className="w-full h-full" /></div>
-              <div className="flex-1"><div className="font-semibold">{l(alt.name)}</div><div className="text-xs text-muted">{t(`equipment.${alt.equipment}`)} · {alt.repRange[0]}–{alt.repRange[1]} reps</div></div></div>
-            <div className="mt-2 text-sm"><span className="text-muted">{t('library.differs')}: </span>{l(a.differs)}</div>
-            <div className="mt-1 text-sm"><span className="text-muted">{t('library.chooseWhen')}: </span>{l(a.chooseWhen)}</div>
+            <div className="flex items-center gap-3"><ExerciseThumb id={alt.id} className="w-14 h-14 rounded-xl shrink-0" />
+              <div className="flex-1"><div className="font-semibold leading-tight">{l(alt.name)}</div><div className="text-xs text-muted"><Mixed>{`${t(`equipment.${alt.equipment}`)} · ${alt.repRange[0]}–${alt.repRange[1]} reps`}</Mixed></div></div></div>
+            <div className="mt-2 text-sm"><span className="text-muted">{t('library.chooseWhen')}: </span>{l(a.chooseWhen)}</div>
           </button>
         ) })}
       </div>

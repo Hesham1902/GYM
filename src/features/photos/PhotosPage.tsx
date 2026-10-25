@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Camera, Images, Trash2, Lock } from 'lucide-react'
 import { useT } from '@/i18n'
+import { confirmSheet } from '@/components/Confirm'
 import { useUi } from '@/stores/uiStore'
 import { Button, Card, Chip, Empty, PageHeader } from '@/components/ui'
 import { BottomSheet } from '@/components/BottomSheet'
@@ -67,7 +68,7 @@ export default function PhotosPage() {
         <input ref={libRef} type="file" accept="image/*" className="hidden" onChange={(e) => { onFile(e.target.files?.[0]); e.target.value = '' }} />
       </BottomSheet>
       <BottomSheet open={!!open} onClose={() => setOpen(null)} title={open ? fmtDate(open.dateKey, lang) : ''} tall>
-        {open && <><Img blob={open.blob} className="w-full rounded-xl object-contain max-h-[70dvh]" /><Button variant="danger" className="w-full mt-3" onClick={async () => { if (confirm(t('common.confirmDelete'))) { await photosRepo.delete(open.id); setOpen(null) } }}><Trash2 size={18} />{t('photos.delete')}</Button></>}
+        {open && <><Img blob={open.blob} className="w-full rounded-xl object-contain max-h-[70dvh]" /><Button variant="danger" className="w-full mt-3" onClick={async () => { if (await confirmSheet(t('photos.delete'), { body: t('common.confirmDelete'), danger: true, okLabel: t('common.delete') })) { await photosRepo.delete(open.id); setOpen(null) } }}><Trash2 size={18} />{t('photos.delete')}</Button></>}
       </BottomSheet>
     </main>
   )

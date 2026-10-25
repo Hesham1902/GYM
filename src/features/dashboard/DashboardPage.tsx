@@ -1,13 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { Play, Settings as SettingsIcon, PersonStanding, Scale, Footprints, ChevronRight, Check, RotateCcw } from 'lucide-react'
+import { Play, Settings as SettingsIcon, PersonStanding, Scale, ChevronRight, Check, RotateCcw } from 'lucide-react'
 import { useT } from '@/i18n'
 import { useSettings } from '@/stores/settingsStore'
 import { useActive } from '@/stores/activeWorkoutStore'
 import { Button, Card, IconButton, PageHeader } from '@/components/ui'
 import { Ring } from '@/components/Ring'
-import { BottomSheet } from '@/components/BottomSheet'
+import { Mixed } from '@/components/Mixed'
 import { db } from '@/db/db'
 import { movingAverage } from '@/db/repo/body'
 import { streak } from '@/db/repo/posture'
@@ -26,7 +26,6 @@ export default function DashboardPage() {
   const settings = useSettings()
   const active = useActive((s) => s.workout)
   const start = useActive((s) => s.start)
-  const [onboard, setOnboard] = useState(false)
   const [busy, setBusy] = useState(false)
   const today = dateKey()
   const kind = todayKind(settings)
@@ -37,7 +36,6 @@ export default function DashboardPage() {
   const unfinished = useLiveQuery(() => db.sessions.where('status').equals('unfinished').toArray(), []) ?? []
   const checkins = useLiveQuery(() => db.postureCheckins.toArray(), []) ?? []
   const body = useLiveQuery(() => db.bodyEntries.orderBy('dateKey').toArray(), []) ?? []
-  useEffect(() => { if (!settings.onboarded) setOnboard(true) }, [settings.onboarded])
 
   const doneThisWeek = sessions.filter((s) => s.status === 'done').length
   const target = trainingDaysPerWeek(settings)
@@ -47,7 +45,6 @@ export default function DashboardPage() {
   const ma = useMemo(() => movingAverage(body), [body])
   const lastAvg = [...ma].reverse().find((x) => x.avg !== null)
   const weekAgoAvg = [...ma].reverse().find((x) => x.avg !== null && x.dateKey <= addDays(today, -7))
-  const todaySteps = body.find((b) => b.dateKey === today)?.steps
   const resumable = active ? null : unfinished[0] ?? null
 
   const begin = async () => {
@@ -70,7 +67,7 @@ export default function DashboardPage() {
       <Card className="mb-3 border-accent/60">
         <div className="text-xs text-muted mb-1">{active ? t('dashboard.resumeWorkout') : resumable ? t('dashboard.unfinished', { date: fmtDate(resumable.dateKey, lang) }) : t('dashboard.todayWorkout')}</div>
         <div className="text-2xl font-bold mb-1">{active ? l(PROGRAM[active.dayKind].name) : resumable ? l(PROGRAM[resumable.dayKind].name) : l(day.name)}</div>
-        {training && !active && !resumable && <div className="text-sm text-muted mb-3">{day.slots.map((s) => EXERCISES[settings.permanentSwaps[s.slotId] ?? s.exerciseId]?.termEn).join(' · ')}</div>}
+        {training && !active && !resumable && <div className="text-sm text-muted mb-3"><bdi dir="ltr">{day.slots.map((s) => EXERCISES[settings.permanentSwaps[s.slotId] ?? s.exerciseId]?.termEn).join(' · ')}</bdi></div>}
         {!training && !active && !resumable && <div className="text-sm text-muted mb-3">{t('dashboard.walk')} · {l(day.name)}</div>}
         {active || resumable ? (
           <Button className="w-full h-14 text-lg" onClick={begin} disabled={busy}><RotateCcw size={20} />{t('dashboard.resumeWorkout')}</Button>
@@ -91,28 +88,20 @@ export default function DashboardPage() {
           <Ring value={target ? doneThisWeek / target : 0} size={44} stroke={6}>{doneThisWeek}</Ring>
           <div className="min-w-0"><div className="text-sm font-semibold">{t('dashboard.weekRing')}</div><div className="text-xs text-muted">{t('dashboard.workoutsOf', { done: doneThisWeek, total: target })}</div></div>
         </Card>
-        <Card className="p-3 flex items-center gap-3" onClick={() => nav('/body')}>
+        {lastAvg && <Card className="p-3 flex items-center gap-3 col-span-2" onClick={() => nav('/body')}>
           <div className="w-11 h-11 rounded-xl bg-info/20 text-info flex items-center justify-center"><Scale /></div>
           <div className="min-w-0"><div className="text-sm font-semibold">{t('dashboard.weightTrend')}</div>
-            <div className="text-xs text-muted">{lastAvg ? <>{lastAvg.avg} {t('common.kg')}{weekAgoAvg && lastAvg.avg !== null && weekAgoAvg.avg !== null && <span className={lastAvg.avg <= weekAgoAvg.avg ? 'text-accent' : 'text-warn'}> ({lastAvg.avg - weekAgoAvg.avg > 0 ? '+' : ''}{(lastAvg.avg - weekAgoAvg.avg).toFixed(1)})</span>}</> : t('dashboard.noWeight')}</div></div>
-        </Card>
-        <Card className="p-3 flex items-center gap-3" onClick={() => nav('/body')}>
-          <div className="w-11 h-11 rounded-xl bg-surface-2 text-muted flex items-center justify-center"><Footprints /></div>
-          <div className="min-w-0"><div className="text-sm font-semibold">{t('body.steps')}</div><div className="text-xs text-muted">{todaySteps !== undefined ? `${todaySteps} / ${settings.stepGoal}` : `${t('body.stepGoal')}: ${settings.stepGoal}`}</div></div>
-        </Card>
+            <div className="text-xs text-muted"><bdi dir="ltr">{lastAvg.avg} {t('common.kg')}</bdi>{weekAgoAvg && lastAvg.avg !== null && weekAgoAvg.avg !== null && <span className={lastAvg.avg <= weekAgoAvg.avg ? 'text-accent' : 'text-warn'}> (<bdi dir="ltr">{lastAvg.avg - weekAgoAvg.avg > 0 ? '+' : ''}{(lastAvg.avg - weekAgoAvg.avg).toFixed(1)}</bdi>)</span>}</div></div>
+        </Card>}
       </div>
 
       <Card className="mb-3 p-3">
         <div className="text-xs text-muted">{t('dashboard.nextMilestone')}</div>
-        <div className="text-sm font-semibold mt-0.5">{week <= 2 ? t('dashboard.milestoneWeek', { week: week + 1, sets: setsForWeek(week + 1, false, true), rir: rirForWeek(week + 1) }) : t('dashboard.milestoneStandard', { week })}</div>
+        <div className="text-sm font-semibold mt-0.5"><Mixed>{week <= 2 ? t('dashboard.milestoneWeek', { week: week + 1, sets: setsForWeek(week + 1, false, true), rir: rirForWeek(week + 1) }) : t('dashboard.milestoneStandard', { week })}</Mixed></div>
       </Card>
 
       {lastSession && <LastSession s={lastSession} />}
 
-      <BottomSheet open={onboard} onClose={() => { settings.set({ onboarded: true }); setOnboard(false) }} title={t('onboarding.title')}>
-        <p className="text-[15px] leading-relaxed text-muted mb-4">{t('onboarding.body')}</p>
-        <div className="flex gap-2"><Button variant="secondary" className="flex-1" onClick={() => { settings.set({ onboarded: true }); setOnboard(false) }}>{t('onboarding.later')}</Button><Button className="flex-1" onClick={() => { settings.set({ onboarded: true, programStartDate: settings.programStartDate ?? today }); setOnboard(false); nav('/settings') }}>{t('onboarding.cta')}</Button></div>
-      </BottomSheet>
     </main>
   )
 }

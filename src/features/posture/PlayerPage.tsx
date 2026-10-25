@@ -5,7 +5,9 @@ import { useT } from '@/i18n'
 import { useSettings } from '@/stores/settingsStore'
 import { useUi } from '@/stores/uiStore'
 import { Button } from '@/components/ui'
-import { ExerciseFigure } from '@/components/ExerciseFigure'
+import { FigureView } from '@/figure/FigureView'
+import { getFigure } from '@/data/figures'
+import { ExerciseThumb } from '@/components/ExerciseMedia'
 import { Ring } from '@/components/Ring'
 import { ROUTINES } from '@/data/routines'
 import { EXERCISES } from '@/data/exercises'
@@ -90,7 +92,7 @@ export default function PlayerPage() {
       </header>
       <div className="flex gap-1 mb-3">{routine.steps.map((_, k) => <div key={k} className={`h-1.5 flex-1 rounded-full ${k < ph.stepIdx ? 'bg-accent' : k === ph.stepIdx ? 'bg-accent/50' : 'bg-surface-2'}`} />)}</div>
       <div className="card p-3 flex-1 flex flex-col items-center justify-center text-center">
-        <div className="w-full max-w-xs aspect-square"><ExerciseFigure poseId={ex.poseId} className="w-full h-full" /></div>
+        <div className="w-full max-w-xs aspect-square rounded-2xl overflow-hidden">{getFigure(ex.id) ? <FigureView figure={getFigure(ex.id)!} className="w-full h-full" /> : <ExerciseThumb id={ex.id} className="w-full h-full" />}</div>
         <h2 className="text-2xl font-bold mt-2">{l(ex.name)}</h2>
         {ph.side && <div className={`mt-1 px-3 py-1 rounded-full text-sm font-semibold ${ph.side === 'L' ? 'bg-info/20 text-info' : 'bg-warn/20 text-warn'}`}>{ph.side === 'L' ? t('posture.left') : t('posture.right')}</div>}
         <p className="text-muted mt-2 text-[15px] leading-relaxed">{ph.kind === 'ready' ? t('posture.getReady') : l(step.cue)}</p>

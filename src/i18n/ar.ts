@@ -56,7 +56,7 @@ export const ar: Dict = {
     saved: 'اتحفظ', pickDay: 'تمرين إيه؟', differentDay: 'اختار يوم', machineNote: 'تنبيه للظهر', unit: 'كجم',
     currentExercise: 'الحالي', upcoming: 'الجاي', completed: 'خلص', tapToJump: 'دوس عشان تروح له', bodyweight: 'وزن الجسم',
     seconds: 'ثواني', holdTime: 'ثبات', perSide: 'لكل جنب', skipConfirm: 'تتخطّى التمرين ده؟', editSet: 'تعديل الـ Set', deleteSet: 'مسح الـ Set',
-    restDefault: 'راحة {sec} ثانية', finishEarly: 'فيه تمارين لسه مخلصتش. تنهي على كده؟',
+    restDefault: 'راحة {sec} ثانية', details: 'تفاصيل', detailsSummary: 'RIR {rir} · {form} · {pain}', actions: 'إجراءات', finishEarly: 'فيه تمارين لسه مخلصتش. تنهي على كده؟',
   },
   posture: {
     title: 'الظهر والأتب', subtitle: 'علاج الكتف المدوّر والرقبة اللي لقدام وتقوس أعلى الظهر',
@@ -99,7 +99,7 @@ export const ar: Dict = {
     secondary: 'مساعد', breathing: 'التنفس', mistakes: 'أخطاء شائعة', avoid: 'تجنب', fix: 'الحل', greenFlags: 'علامات الأداء الصح',
     safety: 'الأمان', startingWeight: 'وزن البداية (الأسبوع ١)', video: 'شوف الفيديو', videoOffline: 'الفيديو محتاج إنترنت', kyphosis: 'تنبيه الظهر المقوّس',
     compound: 'مركّب', isolation: 'عزل', history: 'سجلك', noHistory: 'لسه ما اتسجلش', start: 'البداية', end: 'النهاية', animate: 'حرّك',
-    usedIn: 'في البرنامج', favorite: 'مفضّل', unfavorite: 'شيل من المفضلة', filters: 'فلاتر',
+    usedIn: 'في البرنامج', keyCues: 'الأهم', details: 'الشرح الكامل', favorite: 'مفضّل', unfavorite: 'شيل من المفضلة', filters: 'فلاتر',
   },
   settings: {
     title: 'الإعدادات', language: 'اللغة', arabic: 'العربية', english: 'English', program: 'البرنامج', weekdayPlan: 'أيام التمرين',
@@ -112,9 +112,9 @@ export const ar: Dict = {
     installHint: 'في Safari: مشاركة ← إضافة إلى الشاشة الرئيسية. بعدها افتحه من الشاشة الرئيسية عشان يشتغل ملء الشاشة وأوفلاين.', installed: 'متثبّت ✓',
     updateAvailable: 'فيه تحديث', reload: 'إعادة تحميل', permanentSwaps: 'التبديلات الدائمة', removeSwap: 'شيل', storage: 'التخزين',
     storageUsed: '{mb} MB مستخدمة', reset: 'رجّع الافتراضي', weekdayNone: 'راحة',
-    rampHint: 'الأسبوع ١: set واحدة (٢ لأول تمرين)، حوالي 4 RIR. الأسبوع ٢: 2 sets، حوالي 3 RIR. الأسبوع ٣+: 2–3 sets، حوالي 2 RIR.', theme: 'المظهر',
+    advanced: 'متقدم', rampHint: 'الأسبوع ١: set واحدة (٢ لأول تمرين)، حوالي 4 RIR. الأسبوع ٢: 2 sets، حوالي 3 RIR. الأسبوع ٣+: 2–3 sets، حوالي 2 RIR.', theme: 'المظهر',
   },
-  figure: { start: 'البداية', end: 'النهاية' },
+  figure: { start: 'البداية', end: 'النهاية', mistake: 'الغلط', photo: 'صورة', drawing: 'رسم' },
   toast: { saved: 'اتحفظ', deleted: 'اتمسح', copied: 'اتنسخ', error: 'حصلت مشكلة', audioOn: 'الصوت جاهز', favAdded: 'اتضاف للمفضلة', favRemoved: 'اتشال من المفضلة' },
   onboarding: {
     title: 'أهلًا بيك تاني في التمرين', body: 'البرنامج ده بيدخّلك بالراحة: الأسبوع الأول خفيف عن قصد. حدّد أيام التمرين وتاريخ البداية، وبعدين دوس ابدأ في أول تمرين.',

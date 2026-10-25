@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowDown, ArrowUp, Download, Upload, Trash2, X } from 'lucide-react'
+import { ArrowDown, ArrowUp, Download, Upload, Trash2, X, ChevronDown } from 'lucide-react'
+import { confirmSheet } from '@/components/Confirm'
 import { useT } from '@/i18n'
 import { useSettings } from '@/stores/settingsStore'
 import { useUi } from '@/stores/uiStore'
@@ -25,6 +26,7 @@ export default function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const [reorderDay, setReorderDay] = useState<DayKind>('upperA')
   const [mb, setMb] = useState<number | null>(null)
+  const [adv, setAdv] = useState(false)
   useEffect(() => { storageUsedMb().then(setMb) }, [])
   const week = programWeek(s.programStartDate, s.rampWeekOverride)
   const standalone = typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || (navigator as unknown as { standalone?: boolean }).standalone === true)
@@ -35,7 +37,7 @@ export default function SettingsPage() {
     s.set({ lastBackupAt: Date.now() }); toast(t('toast.saved'), 'success')
   }
   const onImport = async (f: File) => {
-    if (!confirm(t('settings.importConfirm'))) return
+    if (!(await confirmSheet(t('settings.importJson'), { body: t('settings.importConfirm'), danger: true }))) return
     try { const r = await importBackup(await f.text()); toast(t('settings.imported', { n: r.sessions }), 'success') }
     catch (e) { toast(t('settings.importFailed', { msg: (e as Error).message }), 'error') }
   }
@@ -53,17 +55,6 @@ export default function SettingsPage() {
       <h2 className="section">{t('settings.language')}</h2>
       <Card className="mb-4"><Segmented value={s.language} onChange={(v) => s.set({ language: v })} options={[{ value: 'ar', label: t('settings.arabic') }, { value: 'en', label: t('settings.english') }]} /></Card>
 
-      <h2 className="section">{t('settings.program')}</h2>
-      <Card className="mb-4">
-        <Row label={t('settings.programStart')}><input type="date" value={s.programStartDate ?? ''} onChange={(e) => s.set({ programStartDate: e.target.value || null })} className="bg-surface-2 rounded-xl px-3 h-11 text-text" /></Row>
-        <Row label={t('settings.rampWeek')} value={s.rampWeekOverride ? t('settings.rampWeekN', { n: s.rampWeekOverride }) : `${t('settings.rampAuto')} · ${t('settings.rampWeekN', { n: week })}`} />
-        <div className="flex flex-wrap gap-2 mb-2">
-          <Chip active={!s.rampWeekOverride} onClick={() => s.set({ rampWeekOverride: null })}>{t('settings.rampAuto')}</Chip>
-          {[1, 2, 3, 4, 6, 8].map((n) => <Chip key={n} active={s.rampWeekOverride === n} onClick={() => s.set({ rampWeekOverride: n })}>{t('settings.rampWeekN', { n })}</Chip>)}
-        </div>
-        <p className="text-xs text-muted">{t('settings.rampHint')}</p>
-      </Card>
-
       <h2 className="section">{t('settings.weekdayPlan')}</h2>
       <Card className="mb-4 divide-y divide-border">
         {[6, 0, 1, 2, 3, 4, 5].map((d) => (
@@ -74,6 +65,33 @@ export default function SettingsPage() {
             </div>
           </div>
         ))}
+      </Card>
+
+      <h2 className="section">{t('settings.data')}</h2>
+      <Card className="mb-4 flex flex-col gap-2">
+        <p className={`text-sm ${s.lastBackupAt ? 'text-muted' : 'text-warn'}`}>{s.lastBackupAt ? t('settings.lastBackup', { date: fmtDate(dateKey(s.lastBackupAt), lang) }) : t('settings.neverBackup')}</p>
+        <Button variant="secondary" onClick={exportJson}><Download size={18} />{t('settings.exportJson')}</Button>
+        <Button variant="secondary" onClick={async () => { downloadText(`gym-sets-${dateKey()}.csv`, await setsCsv(), 'text/csv'); toast(t('toast.saved'), 'success') }}><Download size={18} />{t('settings.exportCsv')}</Button>
+        <Button variant="secondary" onClick={async () => { downloadText(`gym-body-${dateKey()}.csv`, await bodyCsv(), 'text/csv'); toast(t('toast.saved'), 'success') }}><Download size={18} />{t('settings.exportBodyCsv')}</Button>
+        <Button variant="secondary" onClick={() => fileRef.current?.click()}><Upload size={18} />{t('settings.importJson')}</Button>
+        <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onImport(f); e.target.value = '' }} />
+        {mb !== null && <p className="text-xs text-muted">{t('settings.storageUsed', { mb })}</p>}
+      </Card>
+
+      <h2 className="section">{t('settings.install')}</h2>
+      <Card className="mb-4 text-sm text-muted">{standalone ? <span className="text-accent">{t('settings.installed')}</span> : t('settings.installHint')}</Card>
+
+      <button onClick={() => setAdv(!adv)} className="w-full flex items-center justify-between min-h-12 text-muted text-sm font-semibold uppercase tracking-wide mb-2" aria-expanded={adv}>{t('settings.advanced')}<ChevronDown size={18} className={adv ? 'rotate-180' : ''} /></button>
+      {adv && <>
+      <h2 className="section">{t('settings.program')}</h2>
+      <Card className="mb-4">
+        <Row label={t('settings.programStart')}><input type="date" value={s.programStartDate ?? ''} onChange={(e) => s.set({ programStartDate: e.target.value || null })} className="bg-surface-2 rounded-xl px-3 h-11 text-text" /></Row>
+        <Row label={t('settings.rampWeek')} value={s.rampWeekOverride ? t('settings.rampWeekN', { n: s.rampWeekOverride }) : `${t('settings.rampAuto')} · ${t('settings.rampWeekN', { n: week })}`} />
+        <div className="flex flex-wrap gap-2 mb-2">
+          <Chip active={!s.rampWeekOverride} onClick={() => s.set({ rampWeekOverride: null })}>{t('settings.rampAuto')}</Chip>
+          {[1, 2, 3, 4, 6, 8].map((n) => <Chip key={n} active={s.rampWeekOverride === n} onClick={() => s.set({ rampWeekOverride: n })}>{t('settings.rampWeekN', { n })}</Chip>)}
+        </div>
+        <p className="text-xs text-muted">{t('settings.rampHint')}</p>
       </Card>
 
       <h2 className="section">{t('settings.reorder')}</h2>
@@ -106,22 +124,9 @@ export default function SettingsPage() {
         <Row label={t('settings.stepGoal')}><input type="number" inputMode="numeric" value={s.stepGoal} onChange={(e) => s.set({ stepGoal: parseInt(e.target.value) || 0 })} className="bg-surface-2 rounded-xl px-3 h-11 w-24 text-end text-text" /></Row>
       </Card>
 
-      <h2 className="section">{t('settings.data')}</h2>
-      <Card className="mb-4 flex flex-col gap-2">
-        <p className={`text-sm ${s.lastBackupAt ? 'text-muted' : 'text-warn'}`}>{s.lastBackupAt ? t('settings.lastBackup', { date: fmtDate(dateKey(s.lastBackupAt), lang) }) : t('settings.neverBackup')}</p>
-        <Button variant="secondary" onClick={exportJson}><Download size={18} />{t('settings.exportJson')}</Button>
-        <Button variant="secondary" onClick={async () => { downloadText(`gym-sets-${dateKey()}.csv`, await setsCsv(), 'text/csv'); toast(t('toast.saved'), 'success') }}><Download size={18} />{t('settings.exportCsv')}</Button>
-        <Button variant="secondary" onClick={async () => { downloadText(`gym-body-${dateKey()}.csv`, await bodyCsv(), 'text/csv'); toast(t('toast.saved'), 'success') }}><Download size={18} />{t('settings.exportBodyCsv')}</Button>
-        <Button variant="secondary" onClick={() => fileRef.current?.click()}><Upload size={18} />{t('settings.importJson')}</Button>
-        <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) onImport(f); e.target.value = '' }} />
-        {mb !== null && <p className="text-xs text-muted">{t('settings.storageUsed', { mb })}</p>}
-      </Card>
-
-      <h2 className="section">{t('settings.install')}</h2>
-      <Card className="mb-4 text-sm text-muted">{standalone ? <span className="text-accent">{t('settings.installed')}</span> : t('settings.installHint')}</Card>
-
       <h2 className="section text-danger">{t('settings.danger')}</h2>
-      <Card className="mb-4"><Button variant="danger" className="w-full" onClick={async () => { if (confirm(t('settings.wipeConfirm'))) { await wipeAll(); toast(t('toast.deleted'), 'success'); location.hash = '#/' } }}><Trash2 size={18} />{t('settings.wipe')}</Button></Card>
+      <Card className="mb-4"><Button variant="danger" className="w-full" onClick={async () => { if (await confirmSheet(t('settings.wipe'), { body: t('settings.wipeConfirm'), danger: true, okLabel: t('common.delete') })) { await wipeAll(); toast(t('toast.deleted'), 'success'); location.hash = '#/' } }}><Trash2 size={18} />{t('settings.wipe')}</Button></Card>
+      </>}
       <p className="text-xs text-muted text-center">{t('settings.version')} {__APP_VERSION__}</p>
     </main>
   )

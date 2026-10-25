@@ -54,7 +54,7 @@ export const en = {
     saved: 'Saved', pickDay: 'Which workout?', differentDay: 'Pick a day', machineNote: 'Posture cue', unit: 'kg',
     currentExercise: 'Current', upcoming: 'Up next', completed: 'Completed', tapToJump: 'Tap to jump', bodyweight: 'Bodyweight',
     seconds: 'Seconds', holdTime: 'Hold', perSide: 'per side', skipConfirm: 'Skip this exercise?', editSet: 'Edit set', deleteSet: 'Delete set',
-    restDefault: 'Rest {sec}s', finishEarly: 'Some exercises are not done. Finish anyway?',
+    restDefault: 'Rest {sec}s', details: 'Details', detailsSummary: 'RIR {rir} · {form} · {pain}', actions: 'Actions', finishEarly: 'Some exercises are not done. Finish anyway?',
   },
   posture: {
     title: 'Posture', subtitle: 'Fix rounded shoulders, forward head and upper-back hunch',
@@ -97,7 +97,7 @@ export const en = {
     secondary: 'Secondary', breathing: 'Breathing', mistakes: 'Common mistakes', avoid: 'Avoid', fix: 'Fix', greenFlags: 'Signs of good form',
     safety: 'Safety', startingWeight: 'Starting weight (week 1)', video: 'Watch video', videoOffline: 'Video needs internet', kyphosis: 'Rounded-back cue',
     compound: 'Compound', isolation: 'Isolation', history: 'Your history', noHistory: 'Not logged yet', start: 'Start', end: 'End', animate: 'Animate',
-    usedIn: 'In program', favorite: 'Favorite', unfavorite: 'Unfavorite', filters: 'Filters',
+    usedIn: 'In program', keyCues: 'Key cues', details: 'Full guide', favorite: 'Favorite', unfavorite: 'Unfavorite', filters: 'Filters',
   },
   settings: {
     title: 'Settings', language: 'Language', arabic: 'العربية', english: 'English', program: 'Program', weekdayPlan: 'Training days',
@@ -110,9 +110,9 @@ export const en = {
     installHint: 'In Safari: Share → Add to Home Screen. Then open from the Home Screen for fullscreen and offline use.', installed: 'Installed ✓',
     updateAvailable: 'Update available', reload: 'Reload', permanentSwaps: 'Permanent swaps', removeSwap: 'Remove', storage: 'Storage',
     storageUsed: '{mb} MB used', reset: 'Reset to default', weekdayNone: 'Off',
-    rampHint: 'Week 1: 1 set (2 on first lift), ~4 RIR. Week 2: 2 sets, ~3 RIR. Week 3+: 2–3 sets, ~2 RIR.', theme: 'Theme',
+    advanced: 'Advanced', rampHint: 'Week 1: 1 set (2 on first lift), ~4 RIR. Week 2: 2 sets, ~3 RIR. Week 3+: 2–3 sets, ~2 RIR.', theme: 'Theme',
   },
-  figure: { start: 'Start', end: 'End' },
+  figure: { start: 'Start', end: 'End', mistake: 'Mistake', photo: 'Photo', drawing: 'Drawing' },
   toast: { saved: 'Saved', deleted: 'Deleted', copied: 'Copied', error: 'Something went wrong', audioOn: 'Sound ready', favAdded: 'Added to favorites', favRemoved: 'Removed from favorites' },
   onboarding: {
     title: 'Welcome back to training', body: 'This program eases you in: week 1 is light on purpose. Set your training days and start date, then hit Start on your first workout.',

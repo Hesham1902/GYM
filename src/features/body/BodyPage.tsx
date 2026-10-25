@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { Trash2 } from 'lucide-react'
 import { useT } from '@/i18n'
+import { confirmSheet } from '@/components/Confirm'
 import { useSettings } from '@/stores/settingsStore'
 import { useUi } from '@/stores/uiStore'
 import { Button, Card, Empty, PageHeader } from '@/components/ui'
@@ -73,7 +74,7 @@ export default function BodyPage() {
             </label>
           ))}
           <div className="flex gap-2">
-            {entries.some((x) => x.id === edit.id) && <Button variant="danger" onClick={async () => { if (confirm(t('common.confirmDelete'))) { await bodyRepo.delete(edit.id); setEdit(null) } }}><Trash2 size={18} /></Button>}
+            {entries.some((x) => x.id === edit.id) && <Button variant="danger" onClick={async () => { if (await confirmSheet(t('body.deleteEntry'), { body: t('common.confirmDelete'), danger: true, okLabel: t('common.delete') })) { await bodyRepo.delete(edit.id); setEdit(null) } }}><Trash2 size={18} /></Button>}
             <Button className="flex-1" onClick={save}>{t('common.save')}</Button>
           </div>
         </>}

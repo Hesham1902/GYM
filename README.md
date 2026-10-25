@@ -21,6 +21,8 @@ Other scripts:
 | `npm run preview` | serve `dist/` with the service worker |
 | `npm run test` | Vitest: progression engine, timers, data integrity |
 | `npm run icons` | regenerate PNG icons from `public/icons/icon.svg` |
+| `node scripts/figures-sheet.ts out.png [ids]` | render exercise illustrations to a PNG contact sheet for review |
+| `node scripts/photos.mjs mapping.json raw-dir` | resize dataset photos into `public/photos` |
 
 ## Deploy (GitHub Pages)
 
@@ -37,7 +39,9 @@ The app uses a hash router and relative asset paths, so it works under any sub-p
 src/data/exercises/   74 exercises with bilingual coaching guides, alternatives, posture drills
 src/data/program.ts   Upper A / Lower A / Upper B / Lower B slots
 src/data/routines.ts  posture routines (daily, gym activation, gym decompression)
-src/data/poses.ts     stick-figure keyframes for the animated illustrations
+src/data/figures/     per-exercise illustration data (start/end/mistake joints, equipment, annotations)
+src/figure/           illustration renderer, equipment symbol library, AUTHORING.md guide
+src/data/photos.ts    map to the bundled real photos in public/photos (free-exercise-db, public domain)
 src/engine/           week ramp, double progression, est. 1RM, volume, warm-up calculator
 src/stores/           settings and the crash-safe active workout (localStorage)
 src/db/               Dexie schema, repositories, JSON/CSV export and import

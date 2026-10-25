@@ -6,7 +6,7 @@ import { useT } from '@/i18n'
 import { useSettings } from '@/stores/settingsStore'
 import type { Difficulty, Equipment, Exercise, MuscleGroup, Pattern } from '@/types'
 import { Chip, Empty, IconButton, PageHeader } from '@/components/ui'
-import { ExerciseFigure } from '@/components/ExerciseFigure'
+import { ExerciseThumb } from '@/components/ExerciseMedia'
 import { BottomSheet } from '@/components/BottomSheet'
 
 const MUSCLES: MuscleGroup[] = ['chest', 'upperBack', 'lats', 'shoulders', 'rearDelts', 'biceps', 'triceps', 'quads', 'hamstrings', 'glutes', 'calves', 'core', 'neck']
@@ -17,10 +17,10 @@ export function ExerciseRow({ ex, onClick, fav }: { ex: Exercise; onClick: () =>
   const { l, t } = useT()
   return (
     <button onClick={onClick} className="w-full card p-3 flex items-center gap-3 text-start active:bg-surface-2">
-      <div className="w-16 h-16 rounded-xl bg-bg shrink-0 overflow-hidden"><ExerciseFigure poseId={ex.poseId} animate={false} frame="end" className="w-full h-full" /></div>
+      <ExerciseThumb id={ex.id} className="w-[72px] h-[72px] rounded-xl shrink-0" />
       <div className="flex-1 min-w-0">
         <div className="font-semibold leading-tight line-clamp-2">{l(ex.name)}</div>
-        <div className="text-xs text-muted truncate">{t(`muscles.${ex.muscles[0]}`)} · {t(`equipment.${ex.equipment}`)} · {t(`difficulty.${ex.difficulty}`)}</div>
+        <div className="text-xs text-muted truncate mt-0.5">{t(`muscles.${ex.muscles[0]}`)} · {t(`equipment.${ex.equipment}`)}</div>
       </div>
       {fav && <Star size={18} className="text-warn fill-warn shrink-0" />}
     </button>
@@ -28,7 +28,7 @@ export function ExerciseRow({ ex, onClick, fav }: { ex: Exercise; onClick: () =>
 }
 
 export default function LibraryPage() {
-  const { t, l } = useT()
+  const { t } = useT()
   const nav = useNavigate()
   const favorites = useSettings((s) => s.favorites)
   const [q, setQ] = useState('')
@@ -80,7 +80,6 @@ export default function LibraryPage() {
           <button className="tap flex-1 rounded-2xl bg-accent text-black font-semibold" onClick={() => setFilters(false)}>{t('common.done')} ({list.length})</button>
           <button className="tap px-4 rounded-2xl bg-surface-2 border border-border" onClick={() => { setMuscle(null); setEquip(null); setPattern(null); setDiff(null); setPosture(false) }}>{t('common.clear')}</button>
         </div>
-        <span className="sr-only">{l({ en: '', ar: '' })}</span>
       </BottomSheet>
     </main>
   )
