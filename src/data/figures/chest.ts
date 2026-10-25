@@ -5,7 +5,7 @@ export const chestFigures: Record<string, Figure> = {
   'chest-press-machine': {
     view: 'side',
     equipment: [{ id: 'floor' }, { id: 'chestPress' }],
-    load: [{ id: 'handle', at: 'wrist', a: 90 }],
+    lever: [{ pivot: [150, 56], to: 'wrist' }],
     start: {
       joints: {
         head: [106, 78], neck: [104, 92], shoulder: [102, 104], hip: [106, 150], spine: [100, 128],
@@ -35,7 +35,7 @@ export const chestFigures: Record<string, Figure> = {
   'incline-chest-press': {
     view: 'side',
     equipment: [{ id: 'floor' }, { id: 'inclinePress' }],
-    load: [{ id: 'handle', at: 'wrist' }],
+    lever: [{ pivot: [168, 54], to: 'wrist' }],
     start: {
       joints: {
         head: [72, 87], neck: [77, 100], shoulder: [83, 110], hip: [106, 150], spine: [92, 131],

@@ -5,6 +5,7 @@ export const legsPosteriorFigures: Record<string, Figure> = {
   'seated-leg-curl': {
     view: 'side',
     equipment: [{ id: 'floor' }, { id: 'legCurlSeated' }],
+    lever: [{ pivot: [143, 151], to: 'ankle', end: 'roller', off: [-5, 8] }],
     start: {
       joints: {
         head: [106, 78], neck: [104, 92], shoulder: [102, 104], hip: [106, 150], spine: [100, 128],
@@ -33,6 +34,7 @@ export const legsPosteriorFigures: Record<string, Figure> = {
   'lying-leg-curl': {
     view: 'side',
     equipment: [{ id: 'floor' }, { id: 'legCurlLying' }],
+    lever: [{ pivot: [167, 143], to: 'ankle', end: 'roller', off: [-3, -9] }],
     start: {
       joints: {
         head: [58, 140], neck: [72, 142], shoulder: [84, 142], hip: [130, 142], face: 'back',
@@ -158,32 +160,36 @@ export const legsPosteriorFigures: Record<string, Figure> = {
       note: { spine: true, arrow: [{ from: [140, 130], dir: 0, len: 20 }], muscle: [[116, 140], [118, 154]] },
     },
   },
+  // 45° bench, front of the body toward the lower right. Legs lie on the body line x+y=239, hips just past the pad end.
   'back-extension': {
     view: 'side',
     equipment: [{ id: 'floor' }, { id: 'backExtension' }],
     start: {
+      // hinged at the hips, torso hanging down past the pad, arms crossed on the chest
       joints: {
-        head: [152, 188], neck: [145, 176], shoulder: [139, 166], hip: [116, 126],
-        elbow: [112, 159], wrist: [137, 167],
-        knee: [91, 151], ankle: [66, 176], toe: [82, 179],
+        head: [169, 171], neck: [160, 160], shoulder: [153, 151], hip: [124, 115],
+        elbow: [152, 172], wrist: [145, 161],
+        knee: [98, 141], ankle: [73, 166], toe: [84, 177],
       },
       note: { spine: true },
     },
     end: {
+      // torso back in line with the legs, not past it
       joints: {
-        head: [167, 75], neck: [157, 85], shoulder: [149, 94], hip: [116, 126],
-        elbow: [149, 122], wrist: [141, 97],
-        knee: [91, 151], ankle: [66, 176], toe: [82, 179],
+        head: [175, 64], neck: [165, 74], shoulder: [157, 83], hip: [124, 115],
+        elbow: [177, 80], wrist: [167, 89],
+        knee: [98, 141], ankle: [73, 166], toe: [84, 177],
       },
-      note: { spine: true, arrow: [{ from: [172, 112], dir: 290, len: 22, curve: 8 }], muscle: [[108, 118], [86, 146]] },
+      note: { spine: true, arrow: [{ from: [178, 120], dir: 300, len: 24, curve: 8 }], muscle: [[116, 100], [108, 120]] },
     },
+    // over-arching: lifting past the straight line, lower back pinched
     mistake: {
       joints: {
-        head: [152, 60], neck: [145, 71], shoulder: [135, 84], hip: [116, 126], spine: [118, 100],
-        elbow: [146, 110], wrist: [134, 90],
-        knee: [91, 151], ankle: [66, 176], toe: [82, 179],
+        head: [154, 50], neck: [148, 62], shoulder: [143, 73], hip: [124, 115], spine: [126, 90],
+        elbow: [162, 64], wrist: [156, 76],
+        knee: [98, 141], ankle: [73, 166], toe: [84, 177],
       },
-      note: { mistake: { at: [124, 108] } },
+      note: { mistake: { at: [124, 98] } },
     },
   },
 }

@@ -7,7 +7,7 @@ export const shouldersFigures: Record<string, Figure> = {
   'shoulder-press-machine': {
     view: 'side',
     equipment: [{ id: 'floor' }, { id: 'shoulderPress' }],
-    load: [{ id: 'handle', at: 'wrist' }],
+    lever: [{ pivot: [166, 112], to: 'wrist' }],
     start: {
       joints: {
         head: [106, 78], neck: [104, 92], shoulder: [102, 104], hip: [106, 150], spine: [100, 128],
@@ -152,24 +152,26 @@ export const shouldersFigures: Record<string, Figure> = {
       note: { arrow: [{ from: 'elbowL', dir: 270, len: 20 }], muscle: ['shoulderL'] },
     },
   },
-  // Machine lateral raise, front view, seated on a box: elbows bent 90° (forearms foreshortened toward the viewer) rise to shoulder height.
+  // Machine lateral raise, front view, seated: the pads sit on the outside of the elbows (levers pivot at the shoulders),
+  // elbows bent 90° with the forearms toward the viewer, rising to shoulder height.
   'machine-lateral-raise': {
     view: 'front',
-    equipment: [{ id: 'floor' }, { id: 'box' }],
+    equipment: [{ id: 'floor' }, { id: 'benchEnd' }],
+    lever: [{ pivot: [100, 106], to: 'elbowL', end: 'roller', off: [-8, 0] }, { pivot: [140, 106], to: 'elbowR', end: 'roller', off: [8, 0] }],
     start: {
       joints: {
-        head: [155, 104], neck: [155, 118], shoulderL: [135, 124], shoulderR: [175, 124], hip: [155, 164],
-        elbowL: [133, 152], wristL: [146, 158], elbowR: [177, 152], wristR: [164, 158],
-        kneeL: [142, 170], ankleL: [140, 206], kneeR: [168, 170], ankleR: [170, 206],
+        head: [120, 78], neck: [120, 92], shoulderL: [100, 104], shoulderR: [140, 104], hip: [120, 146],
+        elbowL: [97, 131], wristL: [106, 138], elbowR: [143, 131], wristR: [134, 138],
+        kneeL: [108, 160], ankleL: [106, 204], kneeR: [132, 160], ankleR: [134, 204],
       },
     },
     end: {
       joints: {
-        head: [155, 104], neck: [155, 118], shoulderL: [135, 124], shoulderR: [175, 124], hip: [155, 164],
-        elbowL: [107, 124], wristL: [120, 130], elbowR: [203, 124], wristR: [190, 130],
-        kneeL: [142, 170], ankleL: [140, 206], kneeR: [168, 170], ankleR: [170, 206],
+        head: [120, 78], neck: [120, 92], shoulderL: [100, 104], shoulderR: [140, 104], hip: [120, 146],
+        elbowL: [73, 104], wristL: [80, 112], elbowR: [167, 104], wristR: [160, 112],
+        kneeL: [108, 160], ankleL: [106, 204], kneeR: [132, 160], ankleR: [134, 204],
       },
-      note: { arrow: [{ from: 'elbowL', dir: 270, len: 18 }, { from: 'elbowR', dir: 270, len: 18 }], muscle: ['shoulderL', 'shoulderR'] },
+      note: { arrow: [{ from: 'elbowL', dir: 250, len: 18 }, { from: 'elbowR', dir: 290, len: 18 }], muscle: ['shoulderL', 'shoulderR'] },
     },
   },
 }
