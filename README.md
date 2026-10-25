@@ -60,3 +60,4 @@ src/i18n/             en.ts is the source of keys; ar.ts must define every key (
 - Rest and hold timers are timestamp based: lock the phone, come back, the countdown is still right. iOS does not run JavaScript while locked, so the beep plays when the app returns to the foreground.
 - iOS Safari has no vibration API; the toggle is hidden there.
 - Back up from Settings → Export JSON now and then. Safari can evict site data from sites it considers unused; an installed Home Screen app is normally safe, but a backup costs nothing.
+- The tab bar is 64 px plus the home-indicator inset, capped at 34 px. Some iOS 26.5+ Home Screen apps get a web view that stops short of the screen bottom (WebKit bug 301994) and iOS paints that strip itself; `src/utils/viewport.ts` detects this and drops the inset so the black band under the icons does not double. CSV exports live under Settings → Advanced.
